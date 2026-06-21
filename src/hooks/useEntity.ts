@@ -1,6 +1,6 @@
 import { useHAStore } from '../store/haStore';
 import { useShallow } from 'zustand/react/shallow';
-import { HassEntity } from 'home-assistant-js-websocket';
+import type { HassEntity } from 'home-assistant-js-websocket';
 
 /**
  * Returns the current state of a specific Home Assistant entity.

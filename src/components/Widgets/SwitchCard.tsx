@@ -1,7 +1,7 @@
 import React from 'react';
 import Icon from '@mdi/react';
 import { mdiPower } from '@mdi/js';
-import { SwitchProps } from '../../converters/switchConverter';
+import type { SwitchProps } from '../../converters/switchConverter';
 
 interface SwitchCardProps {
   props: SwitchProps;

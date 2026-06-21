@@ -1,9 +1,8 @@
-import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { EditToolbar } from '../components/Configuration/EditToolbar';
 import { WidgetConfigModal } from '../components/Configuration/WidgetConfigModal';
-import { WidgetConfig } from '../hooks/useLayoutManager';
+import type { WidgetConfig } from '../hooks/useLayoutManager';
 
 describe('Configuration UI Components', () => {
   describe('EditToolbar', () => {

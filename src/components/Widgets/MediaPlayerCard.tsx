@@ -6,10 +6,9 @@ import {
   mdiSkipNext,
   mdiSkipPrevious,
   mdiVolumeHigh,
-  mdiVolumeMute,
   mdiTelevision,
 } from '@mdi/js';
-import { MediaPlayerProps } from '../../converters/mediaPlayerConverter';
+import type { MediaPlayerProps } from '../../converters/mediaPlayerConverter';
 
 interface MediaPlayerCardProps {
   props: MediaPlayerProps;

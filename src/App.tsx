@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { HAProvider, useHA } from './contexts/HAContext';
-import { useLayoutManager, WidgetConfig } from './hooks/useLayoutManager';
+import { useLayoutManager } from './hooks/useLayoutManager';
+import type { WidgetConfig } from './hooks/useLayoutManager';
 import { DashboardGrid } from './components/Grid/DashboardGrid';
 import { EditToolbar } from './components/Configuration/EditToolbar';
 import { EntitySelectorModal } from './components/Configuration/EntitySelectorModal';

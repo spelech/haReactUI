@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Layout, Layouts } from 'react-grid-layout';
+import type { Layout, LayoutItem } from 'react-grid-layout';
+
+export type Layouts = { [breakpoint: string]: LayoutItem[] };
 
 export interface WidgetConfig {
   id: string; // Unique widget instance identifier
@@ -106,7 +108,7 @@ export const useLayoutManager = () => {
 
   // Handler for react-grid-layout changes
   const handleLayoutChange = useCallback(
-    (currentLayout: Layout[], allLayouts: Layouts) => {
+    (_currentLayout: Layout, allLayouts: Layouts) => {
       // Only commit if we are actually editing or if it's an initial calculation
       saveLayouts(allLayouts);
     },

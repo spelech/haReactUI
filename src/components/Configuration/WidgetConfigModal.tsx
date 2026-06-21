@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { WidgetConfig } from '../../hooks/useLayoutManager';
+import type { WidgetConfig } from '../../hooks/useLayoutManager';
 
 interface WidgetConfigModalProps {
   widget: WidgetConfig | null;
