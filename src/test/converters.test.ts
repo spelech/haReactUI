@@ -3,6 +3,9 @@ import { convertLight } from '../converters/lightConverter';
 import { convertSwitch } from '../converters/switchConverter';
 import { convertMediaPlayer } from '../converters/mediaPlayerConverter';
 import { convertSensor } from '../converters/sensorConverter';
+import { convertCover } from '../converters/coverConverter';
+import { convertNumber } from '../converters/numberConverter';
+import { convertButton } from '../converters/buttonConverter';
 import type { HassEntity } from 'home-assistant-js-websocket';
 
 describe('Domain Converters', () => {
@@ -170,6 +173,100 @@ describe('Domain Converters', () => {
       };
       const result = convertSensor(entity);
       expect(result.stateText).toBe('online');
+    });
+  });
+
+  describe('convertCover', () => {
+    it('should convert cover attributes and capability flags', () => {
+      const entity: HassEntity = {
+        entity_id: 'cover.living_room_shades',
+        state: 'open',
+        attributes: {
+          friendly_name: 'Living Room Shades',
+          current_position: 70,
+          supported_features: 15, // 1 + 2 + 4 + 8 (open, close, set_position, stop)
+        },
+        last_changed: '',
+        last_updated: '',
+        context: { id: '', parent_id: null, user_id: null },
+      };
+      const result = convertCover(entity);
+      expect(result.id).toBe('cover.living_room_shades');
+      expect(result.name).toBe('Living Room Shades');
+      expect(result.state).toBe('open');
+      expect(result.position).toBe(70);
+      expect(result.stateText).toBe('70% Open');
+      expect(result.supportsOpen).toBe(true);
+      expect(result.supportsClose).toBe(true);
+      expect(result.supportsPosition).toBe(true);
+      expect(result.supportsStop).toBe(true);
+    });
+
+    it('should handle closed covers and legacy feature flags', () => {
+      const entity: HassEntity = {
+        entity_id: 'cover.garage',
+        state: 'closed',
+        attributes: {
+          friendly_name: 'Garage Door',
+          supported_features: 3, // 1 + 2 (open, close)
+        },
+        last_changed: '',
+        last_updated: '',
+        context: { id: '', parent_id: null, user_id: null },
+      };
+      const result = convertCover(entity);
+      expect(result.state).toBe('closed');
+      expect(result.stateText).toBe('Closed');
+      expect(result.supportsOpen).toBe(true);
+      expect(result.supportsClose).toBe(true);
+      expect(result.supportsPosition).toBe(false);
+      expect(result.supportsStop).toBe(false);
+    });
+  });
+
+  describe('convertNumber', () => {
+    it('should extract numeric attributes', () => {
+      const entity: HassEntity = {
+        entity_id: 'input_number.volume_limit',
+        state: '45.5',
+        attributes: {
+          friendly_name: 'Volume Limit',
+          min: 10,
+          max: 90,
+          step: 0.5,
+          unit_of_measurement: '%',
+        },
+        last_changed: '',
+        last_updated: '',
+        context: { id: '', parent_id: null, user_id: null },
+      };
+      const result = convertNumber(entity);
+      expect(result.id).toBe('input_number.volume_limit');
+      expect(result.name).toBe('Volume Limit');
+      expect(result.value).toBe(45.5);
+      expect(result.min).toBe(10);
+      expect(result.max).toBe(90);
+      expect(result.step).toBe(0.5);
+      expect(result.unit).toBe('%');
+      expect(result.stateText).toBe('45.5 %');
+    });
+  });
+
+  describe('convertButton', () => {
+    it('should convert button/script helper state', () => {
+      const entity: HassEntity = {
+        entity_id: 'button.restart_router',
+        state: '2026-06-21T00:00:00Z',
+        attributes: { friendly_name: 'Restart Router' },
+        last_changed: '',
+        last_updated: '',
+        context: { id: '', parent_id: null, user_id: null },
+      };
+      const result = convertButton(entity);
+      expect(result.id).toBe('button.restart_router');
+      expect(result.name).toBe('Restart Router');
+      expect(result.state).toBe('2026-06-21T00:00:00Z');
+      expect(result.stateText).toBe('2026-06-21T00:00:00Z');
     });
   });
 });

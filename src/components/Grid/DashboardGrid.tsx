@@ -44,7 +44,7 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
         onLayoutChange={onLayoutChange}
       >
         {widgets.map((widget) => (
-          <div key={widget.id} style={styles.gridItem(isEditing)}>
+          <div key={widget.id} style={{ ...styles.gridItem(isEditing), ...(widget.overrides?.style || {}) }}>
             {/* Widget Header in Edit Mode */}
             {isEditing && (
               <div style={styles.editBar}>
