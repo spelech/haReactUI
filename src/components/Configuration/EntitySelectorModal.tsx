@@ -50,7 +50,7 @@ export const EntitySelectorModal: React.FC<EntitySelectorModalProps> = ({
       <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div style={styles.header}>
           <h2 style={styles.title}>Add Widget</h2>
-          <button style={styles.closeBtn} onClick={onClose}>&times;</button>
+          <button style={styles.closeBtn} onClick={onClose} aria-label="Close">&times;</button>
         </div>
 
         <div style={styles.searchBarContainer}>

@@ -40,7 +40,7 @@ export const WidgetConfigModal: React.FC<WidgetConfigModalProps> = ({
       <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div style={styles.header}>
           <h2 style={styles.title}>Configure Widget</h2>
-          <button style={styles.closeBtn} onClick={onClose}>&times;</button>
+          <button style={styles.closeBtn} onClick={onClose} aria-label="Close">&times;</button>
         </div>
 
         <form onSubmit={handleSubmit} style={styles.form}>

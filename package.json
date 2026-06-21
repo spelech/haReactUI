@@ -1,7 +1,7 @@
 {
   "name": "ha-react-ui",
   "private": true,
-  "version": "0.6.1",
+  "version": "0.7.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "playwright test",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -23,6 +24,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.61.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@types/node": "^24.12.3",
