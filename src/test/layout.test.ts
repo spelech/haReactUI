@@ -68,7 +68,7 @@ describe('useLayoutManager hook', () => {
     // Confirm it was added to the layout coordinates
     Object.keys(result.current.layouts).forEach((breakpoint) => {
       const items = result.current.layouts[breakpoint];
-      const match = items.find((item) => item.i === newWidget.id);
+      const match = items.find((item: any) => item.i === newWidget.id);
       expect(match).toBeDefined();
       expect(match?.w).toBe(2);
       expect(match?.h).toBe(2);
@@ -91,7 +91,7 @@ describe('useLayoutManager hook', () => {
     // Confirm it is gone from layouts
     Object.keys(result.current.layouts).forEach((breakpoint) => {
       const items = result.current.layouts[breakpoint];
-      expect(items.find((item) => item.i === widgetIdToRemove)).toBeUndefined();
+      expect(items.find((item: any) => item.i === widgetIdToRemove)).toBeUndefined();
     });
   });
 

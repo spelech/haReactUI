@@ -1,11 +1,11 @@
 import React from 'react';
-import { Responsive, WidthProvider } from 'react-grid-layout';
-import { WidgetConfig } from '../../hooks/useLayoutManager';
+import RGL from 'react-grid-layout';
+import type { WidgetConfig } from '../../hooks/useLayoutManager';
 
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 
-const ResponsiveGridLayout = WidthProvider(Responsive);
+const ResponsiveGridLayout = (RGL as any).WidthProvider((RGL as any).Responsive);
 
 interface DashboardGridProps {
   widgets: WidgetConfig[];

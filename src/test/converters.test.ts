@@ -3,7 +3,7 @@ import { convertLight } from '../converters/lightConverter';
 import { convertSwitch } from '../converters/switchConverter';
 import { convertMediaPlayer } from '../converters/mediaPlayerConverter';
 import { convertSensor } from '../converters/sensorConverter';
-import { HassEntity } from 'home-assistant-js-websocket';
+import type { HassEntity } from 'home-assistant-js-websocket';
 
 describe('Domain Converters', () => {
   describe('convertLight', () => {

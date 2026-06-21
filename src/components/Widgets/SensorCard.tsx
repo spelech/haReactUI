@@ -10,7 +10,7 @@ import {
   mdiLock,
   mdiLockOpen,
 } from '@mdi/js';
-import { SensorProps } from '../../converters/sensorConverter';
+import type { SensorProps } from '../../converters/sensorConverter';
 
 interface SensorCardProps {
   props: SensorProps;
@@ -53,7 +53,7 @@ export const SensorCard: React.FC<SensorCardProps> = ({
   nameOverride,
   iconOverride,
 }) => {
-  const { state, unit, deviceClass, stateText } = props;
+  const { state, unit, deviceClass } = props;
   const displayName = nameOverride || props.name;
 
   const defaultIcon = getIconForDeviceClass(deviceClass, state);

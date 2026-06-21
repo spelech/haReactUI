@@ -1,7 +1,7 @@
 import React from 'react';
 import Icon from '@mdi/react';
 import { mdiLightbulb, mdiLightbulbOutline } from '@mdi/js';
-import { LightProps } from '../../converters/lightConverter';
+import type { LightProps } from '../../converters/lightConverter';
 
 interface LightCardProps {
   props: LightProps;

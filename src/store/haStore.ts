@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { HassEntities } from 'home-assistant-js-websocket';
+import type { HassEntities } from 'home-assistant-js-websocket';
 
 interface HAStore {
   entities: HassEntities;

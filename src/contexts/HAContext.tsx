@@ -1,9 +1,8 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { Connection, subscribeEntities } from 'home-assistant-js-websocket';
 import { useHAStore } from '../store/haStore';
+import type { ConnectionState, ConnectionInfo } from '../services/haConnection';
 import {
-  ConnectionState,
-  ConnectionInfo,
   getSavedConnectionInfo,
   saveConnectionInfo,
   establishConnection,
