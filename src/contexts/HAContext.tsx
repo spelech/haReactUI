@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { Connection } from 'home-assistant-js-websocket';
+import { Connection, subscribeEntities } from 'home-assistant-js-websocket';
+import { useHAStore } from '../store/haStore';
 import {
   ConnectionState,
   ConnectionInfo,
@@ -59,6 +60,18 @@ export const HAProvider: React.FC<HAProviderProps> = ({ children }) => {
   useEffect(() => {
     connect(info);
   }, [connect, info]);
+
+  useEffect(() => {
+    if (!connection) return;
+
+    const unsub = subscribeEntities(connection, (entities) => {
+      useHAStore.getState().setEntities(entities);
+    });
+
+    return () => {
+      unsub();
+    };
+  }, [connection]);
 
   const reconnect = useCallback(async () => {
     await connect(info);
