@@ -4,6 +4,10 @@ import { LightCard } from '../components/Widgets/LightCard';
 import { SwitchCard } from '../components/Widgets/SwitchCard';
 import { SensorCard } from '../components/Widgets/SensorCard';
 import { MediaPlayerCard } from '../components/Widgets/MediaPlayerCard';
+import { ButtonCard } from '../components/Widgets/ButtonCard';
+import { ToggleCard } from '../components/Widgets/ToggleCard';
+import { SliderCard } from '../components/Widgets/SliderCard';
+import { CoverCard } from '../components/Widgets/CoverCard';
 
 describe('Widget Components (Dumb)', () => {
   describe('LightCard', () => {
@@ -130,6 +134,156 @@ describe('Widget Components (Dumb)', () => {
       expect(playPauseBtn).toBeInTheDocument();
       fireEvent.click(playPauseBtn);
       expect(onPause).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('ButtonCard', () => {
+    it('should render and handle press', () => {
+      const onPress = vi.fn();
+      const mockProps = {
+        id: 'button.test',
+        name: 'Trigger Script',
+        state: 'unknown',
+        stateText: 'unknown',
+      };
+
+      render(
+        <ButtonCard
+          props={mockProps}
+          onPress={onPress}
+        />
+      );
+
+      expect(screen.getByText('Trigger Script')).toBeInTheDocument();
+      const card = screen.getByRole('button', { name: 'Press Trigger Script' });
+      fireEvent.click(card);
+      expect(onPress).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('ToggleCard', () => {
+    it('should render state and trigger toggle', () => {
+      const onToggle = vi.fn();
+      const mockProps = {
+        id: 'input_boolean.test',
+        name: 'Guest Mode',
+        isOn: true,
+        stateText: 'On',
+      };
+
+      render(
+        <ToggleCard
+          props={mockProps}
+          onToggle={onToggle}
+        />
+      );
+
+      expect(screen.getByText('Guest Mode')).toBeInTheDocument();
+      expect(screen.getByText('On')).toBeInTheDocument();
+      const card = screen.getByRole('button', { name: 'Toggle Guest Mode' });
+      fireEvent.click(card);
+      expect(onToggle).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('SliderCard', () => {
+    it('should render and decrease values', () => {
+      const onChange = vi.fn();
+      const mockProps = {
+        id: 'input_number.test',
+        name: 'Volume',
+        value: 50,
+        min: 0,
+        max: 100,
+        step: 5,
+        unit: '%',
+        stateText: '50 %',
+      };
+
+      render(
+        <SliderCard
+          props={mockProps}
+          onChange={onChange}
+        />
+      );
+
+      expect(screen.getByText('Volume')).toBeInTheDocument();
+      expect(screen.getByText('50 %')).toBeInTheDocument();
+
+      const decBtn = screen.getByRole('button', { name: 'Decrease value' });
+      fireEvent.click(decBtn);
+      expect(onChange).toHaveBeenCalledWith(45);
+    });
+
+    it('should render and increase values', () => {
+      const onChange = vi.fn();
+      const mockProps = {
+        id: 'input_number.test',
+        name: 'Volume',
+        value: 50,
+        min: 0,
+        max: 100,
+        step: 5,
+        unit: '%',
+        stateText: '50 %',
+      };
+
+      render(
+        <SliderCard
+          props={mockProps}
+          onChange={onChange}
+        />
+      );
+
+      const incBtn = screen.getByRole('button', { name: 'Increase value' });
+      fireEvent.click(incBtn);
+      expect(onChange).toHaveBeenCalledWith(55);
+    });
+  });
+
+  describe('CoverCard', () => {
+    it('should render states and trigger direction buttons', () => {
+      const onOpen = vi.fn();
+      const onClose = vi.fn();
+      const onStop = vi.fn();
+      const onSetPosition = vi.fn();
+
+      const mockProps = {
+        id: 'cover.test',
+        name: 'Blinds',
+        state: 'open',
+        position: 80,
+        stateText: '80% Open',
+        supportsPosition: true,
+        supportsOpen: true,
+        supportsClose: true,
+        supportsStop: true,
+      };
+
+      render(
+        <CoverCard
+          props={mockProps}
+          onOpen={onOpen}
+          onClose={onClose}
+          onStop={onStop}
+          onSetPosition={onSetPosition}
+        />
+      );
+
+      expect(screen.getByText('Blinds')).toBeInTheDocument();
+      expect(screen.getByText('80% Open')).toBeInTheDocument();
+
+      const openBtn = screen.getByRole('button', { name: 'Open cover' });
+      fireEvent.click(openBtn);
+      expect(onOpen).toHaveBeenCalledTimes(1);
+
+      const stopBtn = screen.getByRole('button', { name: 'Stop cover movement' });
+      fireEvent.click(stopBtn);
+      expect(onStop).toHaveBeenCalledTimes(1);
+
+      const closeBtn = screen.getByRole('button', { name: 'Close cover' });
+      fireEvent.click(closeBtn);
+      expect(onClose).toHaveBeenCalledTimes(1);
     });
   });
 });

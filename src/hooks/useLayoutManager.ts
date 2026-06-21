@@ -5,7 +5,7 @@ export type Layouts = { [breakpoint: string]: LayoutItem[] };
 
 export interface WidgetConfig {
   id: string; // Unique widget instance identifier
-  type: 'light' | 'switch' | 'sensor' | 'media' | 'general';
+  type: 'light' | 'switch' | 'sensor' | 'media' | 'button' | 'toggle' | 'slider' | 'cover' | 'general';
   entityId: string;
   overrides?: {
     name?: string;

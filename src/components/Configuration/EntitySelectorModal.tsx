@@ -4,7 +4,10 @@ import { useHAStore } from '../../store/haStore';
 interface EntitySelectorModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectEntity: (entityId: string, type: 'light' | 'switch' | 'sensor' | 'media') => void;
+  onSelectEntity: (
+    entityId: string,
+    type: 'light' | 'switch' | 'sensor' | 'media' | 'button' | 'toggle' | 'slider' | 'cover'
+  ) => void;
 }
 
 export const EntitySelectorModal: React.FC<EntitySelectorModalProps> = ({
@@ -13,7 +16,9 @@ export const EntitySelectorModal: React.FC<EntitySelectorModalProps> = ({
   onSelectEntity,
 }) => {
   const [search, setSearch] = useState('');
-  const [domainFilter, setDomainFilter] = useState<'all' | 'light' | 'switch' | 'sensor' | 'media_player'>('all');
+  const [domainFilter, setDomainFilter] = useState<
+    'all' | 'light' | 'switch' | 'sensor' | 'media_player' | 'button' | 'input_boolean' | 'input_number' | 'cover'
+  >('all');
   const entities = useHAStore((state) => state.entities);
 
   if (!isOpen) return null;
@@ -27,21 +32,43 @@ export const EntitySelectorModal: React.FC<EntitySelectorModalProps> = ({
       friendlyName.toLowerCase().includes(search.toLowerCase());
 
     const domain = entityId.split('.')[0];
-    const isSupportedDomain = ['light', 'switch', 'sensor', 'media_player'].includes(domain);
+    const isSupportedDomain = [
+      'light',
+      'switch',
+      'sensor',
+      'media_player',
+      'button',
+      'script',
+      'scene',
+      'input_boolean',
+      'input_number',
+      'number',
+      'cover',
+    ].includes(domain);
 
     if (!isSupportedDomain) return false;
 
     if (domainFilter === 'all') {
       return matchesSearch;
     }
+    if (domainFilter === 'media_player') return domain === 'media_player' && matchesSearch;
+    if (domainFilter === 'button') return ['button', 'script', 'scene'].includes(domain) && matchesSearch;
+    if (domainFilter === 'input_boolean') return domain === 'input_boolean' && matchesSearch;
+    if (domainFilter === 'input_number') return ['input_number', 'number'].includes(domain) && matchesSearch;
     return domain === domainFilter && matchesSearch;
   });
 
-  const getWidgetType = (entityId: string): 'light' | 'switch' | 'sensor' | 'media' => {
+  const getWidgetType = (
+    entityId: string
+  ): 'light' | 'switch' | 'sensor' | 'media' | 'button' | 'toggle' | 'slider' | 'cover' => {
     const domain = entityId.split('.')[0];
     if (domain === 'light') return 'light';
     if (domain === 'switch') return 'switch';
     if (domain === 'media_player') return 'media';
+    if (domain === 'button' || domain === 'script' || domain === 'scene') return 'button';
+    if (domain === 'input_boolean') return 'toggle';
+    if (domain === 'input_number' || domain === 'number') return 'slider';
+    if (domain === 'cover') return 'cover';
     return 'sensor';
   };
 
@@ -64,13 +91,16 @@ export const EntitySelectorModal: React.FC<EntitySelectorModalProps> = ({
         </div>
 
         <div style={styles.tabsContainer}>
-          {(['all', 'light', 'switch', 'sensor', 'media_player'] as const).map((tab) => (
+          {(['all', 'light', 'switch', 'sensor', 'media_player', 'button', 'input_boolean', 'input_number', 'cover'] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setDomainFilter(tab)}
               style={styles.tab(domainFilter === tab)}
             >
-              {tab === 'media_player' ? 'Media' : tab.charAt(0).toUpperCase() + tab.slice(1)}
+              {tab === 'media_player' ? 'Media' :
+               tab === 'input_boolean' ? 'Toggle' :
+               tab === 'input_number' ? 'Slider' :
+               tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
           ))}
         </div>
@@ -243,6 +273,10 @@ const styles = {
     if (type === 'switch') color = '#3b82f6';
     if (type === 'sensor') color = '#10b981';
     if (type === 'media') color = '#ec4899';
+    if (type === 'button') color = '#a78bfa';
+    if (type === 'toggle') color = '#34d399';
+    if (type === 'slider') color = '#60a5fa';
+    if (type === 'cover') color = '#fb923c';
     return {
       fontSize: '10px',
       fontWeight: 700,

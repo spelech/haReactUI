@@ -5,15 +5,26 @@ import { convertLight } from '../../converters/lightConverter';
 import { convertSwitch } from '../../converters/switchConverter';
 import { convertSensor } from '../../converters/sensorConverter';
 import { convertMediaPlayer } from '../../converters/mediaPlayerConverter';
+import { convertButton } from '../../converters/buttonConverter';
+import { convertNumber } from '../../converters/numberConverter';
+import { convertCover } from '../../converters/coverConverter';
 import { LightCard } from './LightCard';
 import { SwitchCard } from './SwitchCard';
 import { SensorCard } from './SensorCard';
 import { MediaPlayerCard } from './MediaPlayerCard';
+import { ButtonCard } from './ButtonCard';
+import { ToggleCard } from './ToggleCard';
+import { SliderCard } from './SliderCard';
+import { CoverCard } from './CoverCard';
 
 interface SmartWidgetProps {
   entityId: string;
   nameOverride?: string;
   iconOverride?: string;
+}
+
+interface SmartSliderWidgetProps extends SmartWidgetProps {
+  orientation?: 'horizontal' | 'vertical';
 }
 
 const WidgetError: React.FC<{ entityId: string; type: string }> = ({ entityId, type }) => (
@@ -161,6 +172,135 @@ export const SmartMediaPlayerCard: React.FC<SmartWidgetProps> = ({
       onNext={handleNext}
       onPrev={handlePrev}
       onChangeVolume={handleChangeVolume}
+      nameOverride={nameOverride}
+      iconOverride={iconOverride}
+    />
+  );
+};
+
+export const SmartButtonCard: React.FC<SmartWidgetProps> = ({
+  entityId,
+  nameOverride,
+  iconOverride,
+}) => {
+  const entity = useEntity(entityId);
+
+  if (!entity) {
+    return <WidgetError entityId={entityId} type="Button" />;
+  }
+
+  const props = convertButton(entity);
+
+  const handlePress = () => {
+    const domain = entityId.split('.')[0];
+    const service = domain === 'button' ? 'press' : 'turn_on';
+    callService(domain, service, undefined, { entity_id: entityId });
+  };
+
+  return (
+    <ButtonCard
+      props={props}
+      onPress={handlePress}
+      nameOverride={nameOverride}
+      iconOverride={iconOverride}
+    />
+  );
+};
+
+export const SmartToggleCard: React.FC<SmartWidgetProps> = ({
+  entityId,
+  nameOverride,
+  iconOverride,
+}) => {
+  const entity = useEntity(entityId);
+
+  if (!entity) {
+    return <WidgetError entityId={entityId} type="Toggle" />;
+  }
+
+  const props = convertSwitch(entity);
+
+  const handleToggle = () => {
+    const domain = entityId.split('.')[0];
+    callService(domain, 'toggle', undefined, { entity_id: entityId });
+  };
+
+  return (
+    <ToggleCard
+      props={props}
+      onToggle={handleToggle}
+      nameOverride={nameOverride}
+      iconOverride={iconOverride}
+    />
+  );
+};
+
+export const SmartSliderCard: React.FC<SmartSliderWidgetProps> = ({
+  entityId,
+  nameOverride,
+  iconOverride,
+  orientation = 'horizontal',
+}) => {
+  const entity = useEntity(entityId);
+
+  if (!entity) {
+    return <WidgetError entityId={entityId} type="Slider" />;
+  }
+
+  const props = convertNumber(entity);
+
+  const handleChange = (val: number) => {
+    const domain = entityId.split('.')[0];
+    callService(domain, 'set_value', { value: val }, { entity_id: entityId });
+  };
+
+  return (
+    <SliderCard
+      props={props}
+      onChange={handleChange}
+      orientation={orientation}
+      nameOverride={nameOverride}
+      iconOverride={iconOverride}
+    />
+  );
+};
+
+export const SmartCoverCard: React.FC<SmartWidgetProps> = ({
+  entityId,
+  nameOverride,
+  iconOverride,
+}) => {
+  const entity = useEntity(entityId);
+
+  if (!entity) {
+    return <WidgetError entityId={entityId} type="Cover" />;
+  }
+
+  const props = convertCover(entity);
+
+  const handleOpen = () => {
+    callService('cover', 'open_cover', undefined, { entity_id: entityId });
+  };
+
+  const handleClose = () => {
+    callService('cover', 'close_cover', undefined, { entity_id: entityId });
+  };
+
+  const handleStop = () => {
+    callService('cover', 'stop_cover', undefined, { entity_id: entityId });
+  };
+
+  const handleSetPosition = (pos: number) => {
+    callService('cover', 'set_cover_position', { position: pos }, { entity_id: entityId });
+  };
+
+  return (
+    <CoverCard
+      props={props}
+      onOpen={handleOpen}
+      onClose={handleClose}
+      onStop={handleStop}
+      onSetPosition={handleSetPosition}
       nameOverride={nameOverride}
       iconOverride={iconOverride}
     />

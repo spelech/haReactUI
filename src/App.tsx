@@ -11,6 +11,10 @@ import {
   SmartSwitchCard,
   SmartSensorCard,
   SmartMediaPlayerCard,
+  SmartButtonCard,
+  SmartToggleCard,
+  SmartSliderCard,
+  SmartCoverCard,
 } from './components/Widgets/SmartWidgets';
 
 const DashboardContent: React.FC = () => {
@@ -72,6 +76,39 @@ const DashboardContent: React.FC = () => {
       case 'media':
         return (
           <SmartMediaPlayerCard
+            entityId={widget.entityId}
+            nameOverride={overrides?.name}
+            iconOverride={overrides?.icon}
+          />
+        );
+      case 'button':
+        return (
+          <SmartButtonCard
+            entityId={widget.entityId}
+            nameOverride={overrides?.name}
+            iconOverride={overrides?.icon}
+          />
+        );
+      case 'toggle':
+        return (
+          <SmartToggleCard
+            entityId={widget.entityId}
+            nameOverride={overrides?.name}
+            iconOverride={overrides?.icon}
+          />
+        );
+      case 'slider':
+        return (
+          <SmartSliderCard
+            entityId={widget.entityId}
+            nameOverride={overrides?.name}
+            iconOverride={overrides?.icon}
+            orientation={overrides?.orientation || 'horizontal'}
+          />
+        );
+      case 'cover':
+        return (
+          <SmartCoverCard
             entityId={widget.entityId}
             nameOverride={overrides?.name}
             iconOverride={overrides?.icon}

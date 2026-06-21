@@ -5,7 +5,7 @@ interface WidgetConfigModalProps {
   widget: WidgetConfig | null;
   isOpen: boolean;
   onClose: () => void;
-  onSave: (id: string, overrides: { name?: string; icon?: string }) => void;
+  onSave: (id: string, overrides: { name?: string; icon?: string; style?: any }) => void;
 }
 
 export const WidgetConfigModal: React.FC<WidgetConfigModalProps> = ({
@@ -16,11 +16,13 @@ export const WidgetConfigModal: React.FC<WidgetConfigModalProps> = ({
 }) => {
   const [name, setName] = useState('');
   const [icon, setIcon] = useState('');
+  const [styleStr, setStyleStr] = useState('');
 
   useEffect(() => {
     if (widget) {
       setName(widget.overrides?.name || '');
       setIcon(widget.overrides?.icon || '');
+      setStyleStr(widget.overrides?.style ? JSON.stringify(widget.overrides.style, null, 2) : '');
     }
   }, [widget]);
 
@@ -28,9 +30,19 @@ export const WidgetConfigModal: React.FC<WidgetConfigModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    let styleObj = undefined;
+    if (styleStr.trim()) {
+      try {
+        styleObj = JSON.parse(styleStr);
+      } catch (err) {
+        alert('Invalid JSON in custom CSS styles!');
+        return;
+      }
+    }
     onSave(widget.id, {
       name: name.trim() || undefined,
       icon: icon.trim() || undefined,
+      style: styleObj,
     });
     onClose();
   };
@@ -66,6 +78,19 @@ export const WidgetConfigModal: React.FC<WidgetConfigModalProps> = ({
             />
             <span style={styles.helpText}>
               Paste a custom SVG path to override the default widget icon.
+            </span>
+          </div>
+
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Custom CSS Styles (JSON)</label>
+            <textarea
+              value={styleStr}
+              onChange={(e) => setStyleStr(e.target.value)}
+              placeholder='{\n  "backgroundColor": "#1e3a8a",\n  "opacity": "0.9"\n}'
+              style={styles.textarea}
+            />
+            <span style={styles.helpText}>
+              Enter a valid JSON object of React inline CSS styles to override the card container.
             </span>
           </div>
 
@@ -153,6 +178,19 @@ const styles = {
     color: '#f3f4f6',
     fontSize: '14px',
     outline: 'none',
+    boxSizing: 'border-box' as const,
+  },
+  textarea: {
+    padding: '10px 14px',
+    borderRadius: '8px',
+    backgroundColor: '#1f2937',
+    border: '1px solid #374151',
+    color: '#f3f4f6',
+    fontSize: '13px',
+    outline: 'none',
+    minHeight: '80px',
+    resize: 'vertical' as const,
+    fontFamily: 'monospace',
     boxSizing: 'border-box' as const,
   },
   helpText: {
