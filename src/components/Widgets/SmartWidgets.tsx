@@ -8,6 +8,8 @@ import { convertMediaPlayer } from '../../converters/mediaPlayerConverter';
 import { convertButton } from '../../converters/buttonConverter';
 import { convertNumber } from '../../converters/numberConverter';
 import { convertCover } from '../../converters/coverConverter';
+import { convertClimate } from '../../converters/climateConverter';
+import { convertAlarm } from '../../converters/alarmConverter';
 import { LightCard } from './LightCard';
 import { SwitchCard } from './SwitchCard';
 import { SensorCard } from './SensorCard';
@@ -19,8 +21,6 @@ import { CoverCard } from './CoverCard';
 import { ThermostatCard } from './ThermostatCard';
 import { AlarmKeypadCard } from './AlarmKeypadCard';
 import { TvRemoteCard } from './TvRemoteCard';
-import { convertClimate } from '../../converters/climateConverter';
-import { convertAlarm } from '../../converters/alarmConverter';
 
 interface SmartWidgetProps {
   entityId: string;
@@ -32,14 +32,6 @@ interface SmartSliderWidgetProps extends SmartWidgetProps {
   orientation?: 'horizontal' | 'vertical';
 }
 
-const WidgetError: React.FC<{ entityId: string; type: string }> = ({ entityId, type }) => (
-  <div style={styles.errorContainer}>
-    <span style={styles.errorTitle}>Entity Error</span>
-    <span style={styles.errorSub}>{entityId}</span>
-    <span style={styles.errorSub}>({type} not found)</span>
-  </div>
-);
-
 export const SmartLightCard: React.FC<SmartWidgetProps> = ({
   entityId,
   nameOverride,
@@ -48,7 +40,25 @@ export const SmartLightCard: React.FC<SmartWidgetProps> = ({
   const entity = useEntity(entityId);
 
   if (!entity) {
-    return <WidgetError entityId={entityId} type="Light" />;
+    const mockProps = {
+      id: entityId,
+      name: nameOverride || 'Demo Light',
+      isOn: true,
+      brightness: 75,
+      supportsBrightness: true,
+      supportsColorTemp: true,
+      supportsColor: true,
+      stateText: '75% (Demo)',
+    };
+    return (
+      <LightCard
+        props={mockProps}
+        onToggle={() => {}}
+        onChangeBrightness={() => {}}
+        nameOverride={nameOverride}
+        iconOverride={iconOverride}
+      />
+    );
   }
 
   const props = convertLight(entity);
@@ -85,7 +95,20 @@ export const SmartSwitchCard: React.FC<SmartWidgetProps> = ({
   const entity = useEntity(entityId);
 
   if (!entity) {
-    return <WidgetError entityId={entityId} type="Switch" />;
+    const mockProps = {
+      id: entityId,
+      name: nameOverride || 'Demo Switch',
+      isOn: false,
+      stateText: 'Off (Demo)',
+    };
+    return (
+      <SwitchCard
+        props={mockProps}
+        onToggle={() => {}}
+        nameOverride={nameOverride}
+        iconOverride={iconOverride}
+      />
+    );
   }
 
   const props = convertSwitch(entity);
@@ -112,7 +135,21 @@ export const SmartSensorCard: React.FC<SmartWidgetProps> = ({
   const entity = useEntity(entityId);
 
   if (!entity) {
-    return <WidgetError entityId={entityId} type="Sensor" />;
+    const mockProps = {
+      id: entityId,
+      name: nameOverride || 'Demo Sensor',
+      state: '21.8',
+      unit: '°C',
+      deviceClass: 'temperature',
+      stateText: '21.8 °C (Demo)',
+    };
+    return (
+      <SensorCard
+        props={mockProps}
+        nameOverride={nameOverride}
+        iconOverride={iconOverride}
+      />
+    );
   }
 
   const props = convertSensor(entity);
@@ -134,7 +171,36 @@ export const SmartMediaPlayerCard: React.FC<SmartWidgetProps> = ({
   const entity = useEntity(entityId);
 
   if (!entity) {
-    return <WidgetError entityId={entityId} type="Media Player" />;
+    const mockProps = {
+      id: entityId,
+      name: nameOverride || 'Demo Media Player',
+      isOn: true,
+      state: 'playing',
+      isPlaying: true,
+      volume: 45,
+      isMuted: false,
+      mediaTitle: 'Home Assistant Theme',
+      mediaArtist: 'React Dashboard',
+      supportsPlay: true,
+      supportsPause: true,
+      supportsVolume: true,
+      supportsMute: true,
+      supportsNext: true,
+      supportsPrev: true,
+    };
+    return (
+      <MediaPlayerCard
+        props={mockProps}
+        onToggle={() => {}}
+        onPlay={() => {}}
+        onPause={() => {}}
+        onNext={() => {}}
+        onPrev={() => {}}
+        onChangeVolume={() => {}}
+        nameOverride={nameOverride}
+        iconOverride={iconOverride}
+      />
+    );
   }
 
   const props = convertMediaPlayer(entity);
@@ -191,7 +257,20 @@ export const SmartButtonCard: React.FC<SmartWidgetProps> = ({
   const entity = useEntity(entityId);
 
   if (!entity) {
-    return <WidgetError entityId={entityId} type="Button" />;
+    const mockProps = {
+      id: entityId,
+      name: nameOverride || 'Demo Button',
+      state: 'unknown',
+      stateText: 'unknown',
+    };
+    return (
+      <ButtonCard
+        props={mockProps}
+        onPress={() => {}}
+        nameOverride={nameOverride}
+        iconOverride={iconOverride}
+      />
+    );
   }
 
   const props = convertButton(entity);
@@ -220,7 +299,20 @@ export const SmartToggleCard: React.FC<SmartWidgetProps> = ({
   const entity = useEntity(entityId);
 
   if (!entity) {
-    return <WidgetError entityId={entityId} type="Toggle" />;
+    const mockProps = {
+      id: entityId,
+      name: nameOverride || 'Demo Toggle',
+      isOn: true,
+      stateText: 'On (Demo)',
+    };
+    return (
+      <ToggleCard
+        props={mockProps}
+        onToggle={() => {}}
+        nameOverride={nameOverride}
+        iconOverride={iconOverride}
+      />
+    );
   }
 
   const props = convertSwitch(entity);
@@ -249,7 +341,25 @@ export const SmartSliderCard: React.FC<SmartSliderWidgetProps> = ({
   const entity = useEntity(entityId);
 
   if (!entity) {
-    return <WidgetError entityId={entityId} type="Slider" />;
+    const mockProps = {
+      id: entityId,
+      name: nameOverride || 'Demo Slider',
+      value: 65,
+      min: 0,
+      max: 100,
+      step: 5,
+      unit: '%',
+      stateText: '65 % (Demo)',
+    };
+    return (
+      <SliderCard
+        props={mockProps}
+        onChange={() => {}}
+        orientation={orientation}
+        nameOverride={nameOverride}
+        iconOverride={iconOverride}
+      />
+    );
   }
 
   const props = convertNumber(entity);
@@ -278,7 +388,28 @@ export const SmartCoverCard: React.FC<SmartWidgetProps> = ({
   const entity = useEntity(entityId);
 
   if (!entity) {
-    return <WidgetError entityId={entityId} type="Cover" />;
+    const mockProps = {
+      id: entityId,
+      name: nameOverride || 'Demo Cover',
+      state: 'open',
+      position: 80,
+      stateText: '80% Open (Demo)',
+      supportsPosition: true,
+      supportsOpen: true,
+      supportsClose: true,
+      supportsStop: true,
+    };
+    return (
+      <CoverCard
+        props={mockProps}
+        onOpen={() => {}}
+        onClose={() => {}}
+        onStop={() => {}}
+        onSetPosition={() => {}}
+        nameOverride={nameOverride}
+        iconOverride={iconOverride}
+      />
+    );
   }
 
   const props = convertCover(entity);
@@ -319,7 +450,25 @@ export const SmartThermostatCard: React.FC<SmartWidgetProps> = ({
   const entity = useEntity(entityId);
 
   if (!entity) {
-    return <WidgetError entityId={entityId} type="Thermostat" />;
+    const mockProps = {
+      id: entityId,
+      name: nameOverride || 'Demo Thermostat',
+      state: 'heat',
+      currentTemperature: 20,
+      targetTemperature: 21.5,
+      minTemp: 15,
+      maxTemp: 30,
+      hvacModes: ['off', 'heat', 'cool'],
+      stateText: 'HEAT (Target: 21.5°C) (Demo)',
+    };
+    return (
+      <ThermostatCard
+        props={mockProps}
+        onChangeTargetTemp={() => {}}
+        onChangeMode={() => {}}
+        nameOverride={nameOverride}
+      />
+    );
   }
 
   const props = convertClimate(entity);
@@ -349,7 +498,22 @@ export const SmartAlarmKeypadCard: React.FC<SmartWidgetProps> = ({
   const entity = useEntity(entityId);
 
   if (!entity) {
-    return <WidgetError entityId={entityId} type="Alarm Panel" />;
+    const mockProps = {
+      id: entityId,
+      name: nameOverride || 'Demo Alarm Panel',
+      state: 'disarmed',
+      codeRequired: true,
+      stateText: 'Disarmed (Demo)',
+    };
+    return (
+      <AlarmKeypadCard
+        props={mockProps}
+        onArmHome={() => {}}
+        onArmAway={() => {}}
+        onDisarm={() => {}}
+        nameOverride={nameOverride}
+      />
+    );
   }
 
   const props = convertAlarm(entity);
@@ -383,14 +547,11 @@ export const SmartTvRemoteCard: React.FC<SmartWidgetProps> = ({
 }) => {
   const entity = useEntity(entityId);
 
-  if (!entity) {
-    return <WidgetError entityId={entityId} type="TV Remote" />;
-  }
-
-  const name = nameOverride || entity.attributes?.friendly_name || entityId;
+  const name = nameOverride || (entity ? (entity.attributes?.friendly_name || entityId) : 'Demo TV Remote');
   const domain = entityId.split('.')[0];
 
   const handleSendCommand = (cmd: string) => {
+    if (!entity) return; // Demo action
     if (domain === 'remote') {
       callService('remote', 'send_command', { command: [cmd] }, { entity_id: entityId });
     } else if (domain === 'media_player') {
@@ -407,6 +568,7 @@ export const SmartTvRemoteCard: React.FC<SmartWidgetProps> = ({
   };
 
   const handleVolumeUp = () => {
+    if (!entity) return; // Demo action
     if (domain === 'remote') {
       callService('remote', 'send_command', { command: ['volume_up'] }, { entity_id: entityId });
     } else {
@@ -415,6 +577,7 @@ export const SmartTvRemoteCard: React.FC<SmartWidgetProps> = ({
   };
 
   const handleVolumeDown = () => {
+    if (!entity) return; // Demo action
     if (domain === 'remote') {
       callService('remote', 'send_command', { command: ['volume_down'] }, { entity_id: entityId });
     } else {
@@ -423,6 +586,7 @@ export const SmartTvRemoteCard: React.FC<SmartWidgetProps> = ({
   };
 
   const handleMute = () => {
+    if (!entity) return; // Demo action
     if (domain === 'remote') {
       callService('remote', 'send_command', { command: ['volume_mute'] }, { entity_id: entityId });
     } else {
@@ -431,6 +595,7 @@ export const SmartTvRemoteCard: React.FC<SmartWidgetProps> = ({
   };
 
   const handlePowerToggle = () => {
+    if (!entity) return; // Demo action
     if (domain === 'remote') {
       callService('remote', 'send_command', { command: ['power'] }, { entity_id: entityId });
     } else {
@@ -448,31 +613,4 @@ export const SmartTvRemoteCard: React.FC<SmartWidgetProps> = ({
       onPowerToggle={handlePowerToggle}
     />
   );
-};
-
-const styles = {
-  errorContainer: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100%',
-    padding: '12px',
-    backgroundColor: 'rgba(239, 68, 68, 0.05)',
-    border: '1px solid rgba(239, 68, 68, 0.1)',
-    borderRadius: '12px',
-    textAlign: 'center' as const,
-    boxSizing: 'border-box' as const,
-  },
-  errorTitle: {
-    fontSize: '13px',
-    fontWeight: 600,
-    color: '#ef4444',
-    marginBottom: '4px',
-  },
-  errorSub: {
-    fontSize: '11px',
-    color: '#9ca3af',
-    wordBreak: 'break-all' as const,
-  },
 };

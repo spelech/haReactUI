@@ -50,6 +50,8 @@ export const clearConnectionInfo = () => {
   localStorage.removeItem(STORAGE_KEYS.URL);
   localStorage.removeItem(STORAGE_KEYS.TOKEN);
   localStorage.removeItem(STORAGE_KEYS.OAUTH_TOKENS);
+  localStorage.removeItem('ha-dashboard-layouts');
+  localStorage.removeItem('ha-dashboard-widgets');
   connectionSingleton = null;
   authSingleton = null;
 };
