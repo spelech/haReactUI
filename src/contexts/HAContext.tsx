@@ -149,6 +149,23 @@ export const HAProvider: React.FC<HAProviderProps> = ({ children }) => {
           <div style={styles.spinner} />
           <h2 style={styles.loadingText}>Connecting to Home Assistant</h2>
           <p style={styles.loadingSubtext}>{info.url}</p>
+          <button
+            onClick={logout}
+            style={{
+              marginTop: '24px',
+              padding: '8px 16px',
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '8px',
+              color: '#9ca3af',
+              fontSize: '12px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              outline: 'none',
+            }}
+          >
+            Reset Connection Settings
+          </button>
         </div>
       </div>
     );

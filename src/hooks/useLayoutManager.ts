@@ -22,43 +22,45 @@ const STORAGE_KEYS = {
 // Default initial widgets for dashboard demonstration
 const DEFAULT_WIDGETS: WidgetConfig[] = [
   {
-    id: 'widget-living-room-light',
+    id: 'widget-family-room-light',
     type: 'light',
-    entityId: 'light.living_room',
-    overrides: { name: 'Living Room' },
+    entityId: 'light.family_room_lights',
+    overrides: { name: 'Family Room Lights' },
   },
   {
-    id: 'widget-kitchen-light',
+    id: 'widget-living-room-front-light',
     type: 'light',
-    entityId: 'light.kitchen',
+    entityId: 'light.living_room_front_row',
+    overrides: { name: 'Living Room Front' },
   },
   {
-    id: 'widget-tv-switch',
-    type: 'switch',
-    entityId: 'switch.tv',
+    id: 'widget-family-room-shades',
+    type: 'cover',
+    entityId: 'cover.family_room_shades',
+    overrides: { name: 'Family Room Shades' },
   },
 ];
 
 const DEFAULT_LAYOUTS: Layouts = {
   lg: [
-    { i: 'widget-living-room-light', x: 0, y: 0, w: 2, h: 2, minW: 2, minH: 2 },
-    { i: 'widget-kitchen-light', x: 2, y: 0, w: 2, h: 2, minW: 2, minH: 2 },
-    { i: 'widget-tv-switch', x: 4, y: 0, w: 2, h: 2, minW: 2, minH: 2 },
+    { i: 'widget-family-room-light', x: 0, y: 0, w: 2, h: 2, minW: 2, minH: 2 },
+    { i: 'widget-living-room-front-light', x: 2, y: 0, w: 2, h: 2, minW: 2, minH: 2 },
+    { i: 'widget-family-room-shades', x: 4, y: 0, w: 2, h: 2, minW: 2, minH: 2 },
   ],
   md: [
-    { i: 'widget-living-room-light', x: 0, y: 0, w: 2, h: 2, minW: 2, minH: 2 },
-    { i: 'widget-kitchen-light', x: 2, y: 0, w: 2, h: 2, minW: 2, minH: 2 },
-    { i: 'widget-tv-switch', x: 0, y: 2, w: 2, h: 2, minW: 2, minH: 2 },
+    { i: 'widget-family-room-light', x: 0, y: 0, w: 2, h: 2, minW: 2, minH: 2 },
+    { i: 'widget-living-room-front-light', x: 2, y: 0, w: 2, h: 2, minW: 2, minH: 2 },
+    { i: 'widget-family-room-shades', x: 0, y: 2, w: 2, h: 2, minW: 2, minH: 2 },
   ],
   sm: [
-    { i: 'widget-living-room-light', x: 0, y: 0, w: 2, h: 2, minW: 2, minH: 2 },
-    { i: 'widget-kitchen-light', x: 2, y: 0, w: 2, h: 2, minW: 2, minH: 2 },
-    { i: 'widget-tv-switch', x: 0, y: 2, w: 2, h: 2, minW: 2, minH: 2 },
+    { i: 'widget-family-room-light', x: 0, y: 0, w: 2, h: 2, minW: 2, minH: 2 },
+    { i: 'widget-living-room-front-light', x: 2, y: 0, w: 2, h: 2, minW: 2, minH: 2 },
+    { i: 'widget-family-room-shades', x: 0, y: 2, w: 2, h: 2, minW: 2, minH: 2 },
   ],
   xs: [
-    { i: 'widget-living-room-light', x: 0, y: 0, w: 4, h: 2, minW: 2, minH: 2 },
-    { i: 'widget-kitchen-light', x: 0, y: 2, w: 4, h: 2, minW: 2, minH: 2 },
-    { i: 'widget-tv-switch', x: 0, y: 4, w: 4, h: 2, minW: 2, minH: 2 },
+    { i: 'widget-family-room-light', x: 0, y: 0, w: 4, h: 2, minW: 2, minH: 2 },
+    { i: 'widget-living-room-front-light', x: 0, y: 2, w: 4, h: 2, minW: 2, minH: 2 },
+    { i: 'widget-family-room-shades', x: 0, y: 4, w: 4, h: 2, minW: 2, minH: 2 },
   ],
 };
 
