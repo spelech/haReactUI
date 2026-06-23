@@ -5,6 +5,7 @@ interface EditToolbarProps {
   onToggleEdit: () => void;
   onAddWidget: () => void;
   onLogout?: () => void;
+  onResetLayout?: () => void;
 }
 
 export const EditToolbar: React.FC<EditToolbarProps> = ({
@@ -12,6 +13,7 @@ export const EditToolbar: React.FC<EditToolbarProps> = ({
   onToggleEdit,
   onAddWidget,
   onLogout,
+  onResetLayout,
 }) => {
   if (!isEditing) {
     return (
@@ -39,6 +41,21 @@ export const EditToolbar: React.FC<EditToolbarProps> = ({
         <span style={styles.title}>Edit Mode</span>
       </div>
       <div style={styles.actions}>
+        {onResetLayout && (
+          <button
+            style={styles.btn('#d97706')}
+            onClick={() => {
+              if (window.confirm('Reset all layouts and widgets to factory code defaults? This will erase custom widget coordinates.')) {
+                onResetLayout();
+              }
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            Reset Layouts
+          </button>
+        )}
         <button style={styles.btn('#10b981')} onClick={onAddWidget}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <line x1="12" y1="5" x2="12" y2="19" />

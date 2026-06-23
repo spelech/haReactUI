@@ -17,8 +17,8 @@ export interface WidgetConfig {
 }
 
 const STORAGE_KEYS = {
-  LAYOUTS: 'ha-dashboard-layouts-v3',
-  WIDGETS: 'ha-dashboard-widgets-v3',
+  LAYOUTS: 'ha-dashboard-layouts-v4',
+  WIDGETS: 'ha-dashboard-widgets-v4',
   CURRENT_VIEW: 'ha-dashboard-current-view',
 };
 
@@ -78,9 +78,9 @@ const DEFAULT_LAYOUTS: ViewLayouts = {
   },
   security: {
     lg: [
-      { i: 's-alarm', x: 0, y: 0, w: 2, h: 2, minW: 2, minH: 2 },
+      { i: 's-alarm', x: 0, y: 0, w: 2, h: 4, minW: 2, minH: 2 },
       { i: 's-garage', x: 2, y: 0, w: 2, h: 2, minW: 2, minH: 2 },
-      { i: 's-doorbell', x: 0, y: 2, w: 2, h: 2, minW: 2, minH: 2 },
+      { i: 's-doorbell', x: 0, y: 4, w: 2, h: 2, minW: 2, minH: 2 },
       { i: 's-driveway-cam', x: 2, y: 2, w: 2, h: 2, minW: 2, minH: 2 },
     ],
   },
@@ -202,7 +202,21 @@ export const useLayoutManager = () => {
   );
 
   const addWidget = useCallback(
-    (widget: Omit<WidgetConfig, 'id' | 'view'>, w = 2, h = 2) => {
+    (widget: Omit<WidgetConfig, 'id' | 'view'>, customW?: number, customH?: number) => {
+      let w = customW ?? 2;
+      let h = customH ?? 2;
+
+      // Assign type-specific default heights to prevent content cut-off
+      if (customW === undefined && customH === undefined) {
+        if (widget.type === 'remote') {
+          h = 4;
+        } else if (widget.type === 'alarm') {
+          h = 4;
+        } else if (widget.type === 'car') {
+          h = 3;
+        }
+      }
+
       const newId = `widget-${widget.type}-${widget.entityId}-${Date.now()}`;
       const newWidget: WidgetConfig = { ...widget, id: newId, view: currentView };
 
@@ -269,6 +283,13 @@ export const useLayoutManager = () => {
     [allWidgets, saveAllWidgets]
   );
 
+  const resetLayout = useCallback(() => {
+    setAllWidgets(DEFAULT_WIDGETS);
+    setAllLayouts(DEFAULT_LAYOUTS);
+    localStorage.setItem(STORAGE_KEYS.WIDGETS, JSON.stringify(DEFAULT_WIDGETS));
+    localStorage.setItem(STORAGE_KEYS.LAYOUTS, JSON.stringify(DEFAULT_LAYOUTS));
+  }, []);
+
   return {
     currentView,
     setCurrentView: changeView,
@@ -281,5 +302,6 @@ export const useLayoutManager = () => {
     addWidget,
     removeWidget,
     updateWidgetOverrides,
+    resetLayout,
   };
 };

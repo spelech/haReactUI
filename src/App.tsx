@@ -63,6 +63,7 @@ const DashboardContent: React.FC = () => {
     addWidget,
     removeWidget,
     updateWidgetOverrides,
+    resetLayout,
   } = useLayoutManager();
 
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
@@ -257,6 +258,7 @@ const DashboardContent: React.FC = () => {
           onToggleEdit={() => setIsEditing(!isEditing)}
           onAddWidget={() => setIsSelectorOpen(true)}
           onLogout={logout}
+          onResetLayout={resetLayout}
         />
 
         <main style={styles.mainContent}>
