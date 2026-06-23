@@ -16,6 +16,11 @@ import { ButtonCard } from './ButtonCard';
 import { ToggleCard } from './ToggleCard';
 import { SliderCard } from './SliderCard';
 import { CoverCard } from './CoverCard';
+import { ThermostatCard } from './ThermostatCard';
+import { AlarmKeypadCard } from './AlarmKeypadCard';
+import { TvRemoteCard } from './TvRemoteCard';
+import { convertClimate } from '../../converters/climateConverter';
+import { convertAlarm } from '../../converters/alarmConverter';
 
 interface SmartWidgetProps {
   entityId: string;
@@ -303,6 +308,144 @@ export const SmartCoverCard: React.FC<SmartWidgetProps> = ({
       onSetPosition={handleSetPosition}
       nameOverride={nameOverride}
       iconOverride={iconOverride}
+    />
+  );
+};
+
+export const SmartThermostatCard: React.FC<SmartWidgetProps> = ({
+  entityId,
+  nameOverride,
+}) => {
+  const entity = useEntity(entityId);
+
+  if (!entity) {
+    return <WidgetError entityId={entityId} type="Thermostat" />;
+  }
+
+  const props = convertClimate(entity);
+
+  const handleChangeTargetTemp = (temp: number) => {
+    callService('climate', 'set_temperature', { temperature: temp }, { entity_id: entityId });
+  };
+
+  const handleChangeMode = (mode: string) => {
+    callService('climate', 'set_hvac_mode', { hvac_mode: mode }, { entity_id: entityId });
+  };
+
+  return (
+    <ThermostatCard
+      props={props}
+      onChangeTargetTemp={handleChangeTargetTemp}
+      onChangeMode={handleChangeMode}
+      nameOverride={nameOverride}
+    />
+  );
+};
+
+export const SmartAlarmKeypadCard: React.FC<SmartWidgetProps> = ({
+  entityId,
+  nameOverride,
+}) => {
+  const entity = useEntity(entityId);
+
+  if (!entity) {
+    return <WidgetError entityId={entityId} type="Alarm Panel" />;
+  }
+
+  const props = convertAlarm(entity);
+
+  const handleArmHome = (code: string) => {
+    callService('alarm_control_panel', 'alarm_arm_home', { code }, { entity_id: entityId });
+  };
+
+  const handleArmAway = (code: string) => {
+    callService('alarm_control_panel', 'alarm_arm_away', { code }, { entity_id: entityId });
+  };
+
+  const handleDisarm = (code: string) => {
+    callService('alarm_control_panel', 'alarm_disarm', { code }, { entity_id: entityId });
+  };
+
+  return (
+    <AlarmKeypadCard
+      props={props}
+      onArmHome={handleArmHome}
+      onArmAway={handleArmAway}
+      onDisarm={handleDisarm}
+      nameOverride={nameOverride}
+    />
+  );
+};
+
+export const SmartTvRemoteCard: React.FC<SmartWidgetProps> = ({
+  entityId,
+  nameOverride,
+}) => {
+  const entity = useEntity(entityId);
+
+  if (!entity) {
+    return <WidgetError entityId={entityId} type="TV Remote" />;
+  }
+
+  const name = nameOverride || entity.attributes?.friendly_name || entityId;
+  const domain = entityId.split('.')[0];
+
+  const handleSendCommand = (cmd: string) => {
+    if (domain === 'remote') {
+      callService('remote', 'send_command', { command: [cmd] }, { entity_id: entityId });
+    } else if (domain === 'media_player') {
+      if (cmd === 'play') {
+        callService('media_player', 'media_play', undefined, { entity_id: entityId });
+      } else if (cmd === 'pause') {
+        callService('media_player', 'media_pause', undefined, { entity_id: entityId });
+      } else if (cmd === 'back') {
+        callService('media_player', 'media_previous_track', undefined, { entity_id: entityId });
+      } else if (cmd === 'home') {
+        callService('media_player', 'turn_on', undefined, { entity_id: entityId });
+      }
+    }
+  };
+
+  const handleVolumeUp = () => {
+    if (domain === 'remote') {
+      callService('remote', 'send_command', { command: ['volume_up'] }, { entity_id: entityId });
+    } else {
+      callService('media_player', 'volume_up', undefined, { entity_id: entityId });
+    }
+  };
+
+  const handleVolumeDown = () => {
+    if (domain === 'remote') {
+      callService('remote', 'send_command', { command: ['volume_down'] }, { entity_id: entityId });
+    } else {
+      callService('media_player', 'volume_down', undefined, { entity_id: entityId });
+    }
+  };
+
+  const handleMute = () => {
+    if (domain === 'remote') {
+      callService('remote', 'send_command', { command: ['volume_mute'] }, { entity_id: entityId });
+    } else {
+      callService('media_player', 'volume_mute', { is_volume_muted: !entity.attributes?.is_volume_muted }, { entity_id: entityId });
+    }
+  };
+
+  const handlePowerToggle = () => {
+    if (domain === 'remote') {
+      callService('remote', 'send_command', { command: ['power'] }, { entity_id: entityId });
+    } else {
+      callService('media_player', 'toggle', undefined, { entity_id: entityId });
+    }
+  };
+
+  return (
+    <TvRemoteCard
+      name={name}
+      onSendCommand={handleSendCommand}
+      onVolumeUp={handleVolumeUp}
+      onVolumeDown={handleVolumeDown}
+      onMute={handleMute}
+      onPowerToggle={handlePowerToggle}
     />
   );
 };

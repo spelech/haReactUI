@@ -6,6 +6,8 @@ import { convertSensor } from '../converters/sensorConverter';
 import { convertCover } from '../converters/coverConverter';
 import { convertNumber } from '../converters/numberConverter';
 import { convertButton } from '../converters/buttonConverter';
+import { convertClimate } from '../converters/climateConverter';
+import { convertAlarm } from '../converters/alarmConverter';
 import type { HassEntity } from 'home-assistant-js-websocket';
 
 describe('Domain Converters', () => {
@@ -267,6 +269,58 @@ describe('Domain Converters', () => {
       expect(result.name).toBe('Restart Router');
       expect(result.state).toBe('2026-06-21T00:00:00Z');
       expect(result.stateText).toBe('2026-06-21T00:00:00Z');
+    });
+  });
+
+  describe('convertClimate', () => {
+    it('should convert climate attributes correctly', () => {
+      const entity: HassEntity = {
+        entity_id: 'climate.nest',
+        state: 'heat',
+        attributes: {
+          friendly_name: 'Nest Thermostat',
+          current_temperature: 20.5,
+          temperature: 22,
+          min_temp: 16,
+          max_temp: 28,
+          hvac_modes: ['off', 'heat', 'cool'],
+        },
+        last_changed: '',
+        last_updated: '',
+        context: { id: '', parent_id: null, user_id: null },
+      };
+      const result = convertClimate(entity);
+      expect(result.id).toBe('climate.nest');
+      expect(result.name).toBe('Nest Thermostat');
+      expect(result.state).toBe('heat');
+      expect(result.currentTemperature).toBe(20.5);
+      expect(result.targetTemperature).toBe(22);
+      expect(result.minTemp).toBe(16);
+      expect(result.maxTemp).toBe(28);
+      expect(result.stateText).toBe('HEAT (Target: 22°C)');
+    });
+  });
+
+  describe('convertAlarm', () => {
+    it('should convert alarm panel states', () => {
+      const entity: HassEntity = {
+        entity_id: 'alarm_control_panel.home_alarm',
+        state: 'armed_home',
+        attributes: {
+          friendly_name: 'Home Alarm',
+          code_format: 'number',
+        },
+        last_changed: '',
+        last_updated: '',
+        context: { id: '', parent_id: null, user_id: null },
+      };
+      const result = convertAlarm(entity);
+      expect(result.id).toBe('alarm_control_panel.home_alarm');
+      expect(result.name).toBe('Home Alarm');
+      expect(result.state).toBe('armed_home');
+      expect(result.codeFormat).toBe('number');
+      expect(result.codeRequired).toBe(true);
+      expect(result.stateText).toBe('Armed (Home)');
     });
   });
 });

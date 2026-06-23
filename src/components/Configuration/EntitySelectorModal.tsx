@@ -6,7 +6,7 @@ interface EntitySelectorModalProps {
   onClose: () => void;
   onSelectEntity: (
     entityId: string,
-    type: 'light' | 'switch' | 'sensor' | 'media' | 'button' | 'toggle' | 'slider' | 'cover'
+    type: 'light' | 'switch' | 'sensor' | 'media' | 'button' | 'toggle' | 'slider' | 'cover' | 'thermostat' | 'alarm' | 'remote'
   ) => void;
 }
 
@@ -17,7 +17,7 @@ export const EntitySelectorModal: React.FC<EntitySelectorModalProps> = ({
 }) => {
   const [search, setSearch] = useState('');
   const [domainFilter, setDomainFilter] = useState<
-    'all' | 'light' | 'switch' | 'sensor' | 'media_player' | 'button' | 'input_boolean' | 'input_number' | 'cover'
+    'all' | 'light' | 'switch' | 'sensor' | 'media_player' | 'button' | 'input_boolean' | 'input_number' | 'cover' | 'climate' | 'alarm_control_panel' | 'remote'
   >('all');
   const entities = useHAStore((state) => state.entities);
 
@@ -44,6 +44,9 @@ export const EntitySelectorModal: React.FC<EntitySelectorModalProps> = ({
       'input_number',
       'number',
       'cover',
+      'climate',
+      'alarm_control_panel',
+      'remote',
     ].includes(domain);
 
     if (!isSupportedDomain) return false;
@@ -60,7 +63,7 @@ export const EntitySelectorModal: React.FC<EntitySelectorModalProps> = ({
 
   const getWidgetType = (
     entityId: string
-  ): 'light' | 'switch' | 'sensor' | 'media' | 'button' | 'toggle' | 'slider' | 'cover' => {
+  ): 'light' | 'switch' | 'sensor' | 'media' | 'button' | 'toggle' | 'slider' | 'cover' | 'thermostat' | 'alarm' | 'remote' => {
     const domain = entityId.split('.')[0];
     if (domain === 'light') return 'light';
     if (domain === 'switch') return 'switch';
@@ -69,6 +72,9 @@ export const EntitySelectorModal: React.FC<EntitySelectorModalProps> = ({
     if (domain === 'input_boolean') return 'toggle';
     if (domain === 'input_number' || domain === 'number') return 'slider';
     if (domain === 'cover') return 'cover';
+    if (domain === 'climate') return 'thermostat';
+    if (domain === 'alarm_control_panel') return 'alarm';
+    if (domain === 'remote') return 'remote';
     return 'sensor';
   };
 
@@ -91,7 +97,7 @@ export const EntitySelectorModal: React.FC<EntitySelectorModalProps> = ({
         </div>
 
         <div style={styles.tabsContainer}>
-          {(['all', 'light', 'switch', 'sensor', 'media_player', 'button', 'input_boolean', 'input_number', 'cover'] as const).map((tab) => (
+          {(['all', 'light', 'switch', 'sensor', 'media_player', 'button', 'input_boolean', 'input_number', 'cover', 'climate', 'alarm_control_panel', 'remote'] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setDomainFilter(tab)}
@@ -100,6 +106,8 @@ export const EntitySelectorModal: React.FC<EntitySelectorModalProps> = ({
               {tab === 'media_player' ? 'Media' :
                tab === 'input_boolean' ? 'Toggle' :
                tab === 'input_number' ? 'Slider' :
+               tab === 'climate' ? 'Thermostat' :
+               tab === 'alarm_control_panel' ? 'Alarm' :
                tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
           ))}
@@ -277,6 +285,9 @@ const styles = {
     if (type === 'toggle') color = '#34d399';
     if (type === 'slider') color = '#60a5fa';
     if (type === 'cover') color = '#fb923c';
+    if (type === 'thermostat') color = '#ef4444';
+    if (type === 'alarm') color = '#f59e0b';
+    if (type === 'remote') color = '#6366f1';
     return {
       fontSize: '10px',
       fontWeight: 700,
