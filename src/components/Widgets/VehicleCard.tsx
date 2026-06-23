@@ -73,7 +73,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
   };
 
   return (
-    <div ref={containerRef} style={styles.card}>
+    <div ref={containerRef} style={styles.card(cardHeight < 190)}>
       {/* Title Header */}
       <div style={styles.header}>
         <div style={styles.headerLeft}>
@@ -98,22 +98,22 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
       </div>
 
       {/* Main stats layout */}
-      <div style={styles.mainStats}>
+      <div style={styles.mainStats(cardHeight < 190)}>
         <div style={styles.fuelGaugeContainer}>
-          <div style={styles.circularProgress(fuel)}>
-            <div style={styles.circularInner}>
-              <Icon path={mdiGasStation} size={0.9} color="#fbbf24" />
-              <span style={styles.fuelPct}>{fuel}%</span>
-              <span style={styles.fuelLabel}>Fuel</span>
+          <div style={styles.circularProgress(fuel, cardHeight < 190)}>
+            <div style={styles.circularInner(cardHeight < 190)}>
+              <Icon path={mdiGasStation} size={cardHeight < 190 ? 0.7 : 0.9} color="#fbbf24" />
+              <span style={styles.fuelPct(cardHeight < 190)}>{fuel}%</span>
+              <span style={styles.fuelLabel(cardHeight < 190)}>Fuel</span>
             </div>
           </div>
         </div>
-        <div style={styles.detailStats}>
-          <div style={styles.detailItem}>
+        <div style={styles.detailStats(cardHeight < 190)}>
+          <div style={styles.detailItem(cardHeight < 190)}>
             <span style={styles.detailLabel}>Range</span>
             <span style={styles.detailValue}>{range} mi</span>
           </div>
-          <div style={styles.detailItem}>
+          <div style={styles.detailItem(cardHeight < 190)}>
             <span style={styles.detailLabel}>Odometer</span>
             <div style={styles.odometerContainer}>
               <Icon path={mdiCounter} size={0.6} color="#9ca3af" />
@@ -145,18 +145,18 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
 };
 
 const styles = {
-  card: {
+  card: (isCompact: boolean) => ({
     display: 'flex',
     flexDirection: 'column' as const,
     height: '100%',
-    padding: '16px',
+    padding: isCompact ? '12px' : '16px',
     boxSizing: 'border-box' as const,
     background: 'linear-gradient(135deg, rgba(17, 24, 39, 0.75) 0%, rgba(10, 15, 30, 0.75) 100%)',
     borderRadius: '16px',
     border: '1px solid rgba(255, 255, 255, 0.05)',
     justifyContent: 'space-between',
     userSelect: 'none' as const,
-  },
+  }),
   header: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -210,23 +210,24 @@ const styles = {
     fontSize: '12px',
     fontWeight: 600,
   },
-  mainStats: {
+  mainStats: (isCompact: boolean) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    margin: '16px 0',
-    gap: '20px',
-  },
+    margin: isCompact ? '8px 0' : '16px 0',
+    gap: isCompact ? '10px' : '20px',
+  }),
   fuelGaugeContainer: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  circularProgress: (percentage: number) => {
+  circularProgress: (percentage: number, isCompact: boolean) => {
     const angle = (percentage / 100) * 360;
+    const size = isCompact ? '72px' : '90px';
     return {
-      width: '90px',
-      height: '90px',
+      width: size,
+      height: size,
       borderRadius: '50%',
       background: `conic-gradient(#fbbf24 0deg, #fbbf24 ${angle}deg, rgba(255, 255, 255, 0.05) ${angle}deg, rgba(255, 255, 255, 0.05) 360deg)`,
       display: 'flex',
@@ -234,38 +235,41 @@ const styles = {
       justifyContent: 'center',
     };
   },
-  circularInner: {
-    width: '78px',
-    height: '78px',
-    borderRadius: '50%',
-    backgroundColor: '#111827',
-    display: 'flex',
-    flexDirection: 'column' as const,
-    alignItems: 'center',
-    justifyContent: 'center',
+  circularInner: (isCompact: boolean) => {
+    const size = isCompact ? '60px' : '78px';
+    return {
+      width: size,
+      height: size,
+      borderRadius: '50%',
+      backgroundColor: '#111827',
+      display: 'flex',
+      flexDirection: 'column' as const,
+      alignItems: 'center',
+      justifyContent: 'center',
+    };
   },
-  fuelPct: {
-    fontSize: '16px',
+  fuelPct: (isCompact: boolean) => ({
+    fontSize: isCompact ? '13px' : '16px',
     fontWeight: 700,
     color: '#ffffff',
     marginTop: '2px',
-  },
-  fuelLabel: {
-    fontSize: '9px',
+  }),
+  fuelLabel: (isCompact: boolean) => ({
+    fontSize: isCompact ? '8px' : '9px',
     color: '#6b7280',
     fontWeight: 600,
-  },
-  detailStats: {
+  }),
+  detailStats: (isCompact: boolean) => ({
     flex: 1,
     display: 'flex',
     flexDirection: 'column' as const,
-    gap: '12px',
-  },
-  detailItem: {
+    gap: isCompact ? '6px' : '12px',
+  }),
+  detailItem: (isCompact: boolean) => ({
     display: 'flex',
     flexDirection: 'column' as const,
-    gap: '4px',
-  },
+    gap: isCompact ? '2px' : '4px',
+  }),
   detailLabel: {
     fontSize: '10px',
     fontWeight: 600,

@@ -81,12 +81,34 @@ test.describe('Dashboard Card Overflow Inspector', () => {
 
         const measurements = await cardContent.evaluate((el) => {
           const targetEl = el as HTMLElement;
+          const cardRect = targetEl.getBoundingClientRect();
+          
+          // Find the maximum bottom and right coordinates among all child elements
+          const children = Array.from(targetEl.querySelectorAll('*'));
+          let maxBottom = cardRect.bottom;
+          let maxRight = cardRect.right;
+          
+          for (const child of children) {
+            const rect = child.getBoundingClientRect();
+            // Only check elements that are visible and have size
+            if (rect.height > 0 && rect.width > 0) {
+              if (rect.bottom > maxBottom) {
+                maxBottom = rect.bottom;
+              }
+              if (rect.right > maxRight) {
+                maxRight = rect.right;
+              }
+            }
+          }
+          
+          const computedScrollHeight = cardRect.height + (maxBottom - cardRect.bottom);
+          const computedScrollWidth = cardRect.width + (maxRight - cardRect.right);
           
           return {
-            clientHeight: targetEl.clientHeight,
-            scrollHeight: targetEl.scrollHeight,
-            clientWidth: targetEl.clientWidth,
-            scrollWidth: targetEl.scrollWidth,
+            clientHeight: cardRect.height,
+            scrollHeight: Math.round(computedScrollHeight),
+            clientWidth: cardRect.width,
+            scrollWidth: Math.round(computedScrollWidth),
             title: targetEl.querySelector('h3, h2, span')?.textContent || 'Unknown Title',
           };
         });

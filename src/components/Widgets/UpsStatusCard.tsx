@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Icon } from '@mdi/react';
 import { mdiBattery, mdiBatteryCharging, mdiFlash, mdiClockOutline, mdiAlertCircle } from '@mdi/js';
 import { useEntity } from '../../hooks/useEntity';
@@ -34,7 +34,6 @@ export const UpsStatusCard: React.FC<UpsStatusCardProps> = ({
     const val = parseFloat(runtimeEntity.state);
     if (!isNaN(val)) {
       // If runtime is returned in seconds (common for NUT integration), convert to minutes
-      // Nutt runtime can be in minutes too, we'll check if the number is large
       if (val > 120) {
         runtimeStr = `${Math.round(val / 60)}m`;
       } else {
@@ -44,6 +43,22 @@ export const UpsStatusCard: React.FC<UpsStatusCardProps> = ({
       runtimeStr = runtimeEntity.state;
     }
   }
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [cardHeight, setCardHeight] = useState<number>(300);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setCardHeight(entry.contentRect.height);
+      }
+    });
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const isCompact = cardHeight < 190;
 
   const getStatusLabel = () => {
     if (isOnline) return 'ONLINE';
@@ -57,7 +72,7 @@ export const UpsStatusCard: React.FC<UpsStatusCardProps> = ({
   };
 
   return (
-    <div style={styles.card}>
+    <div ref={containerRef} style={styles.card(isCompact)}>
       {/* Header */}
       <div style={styles.header}>
         <div style={styles.headerLeft}>
@@ -81,9 +96,9 @@ export const UpsStatusCard: React.FC<UpsStatusCardProps> = ({
       </div>
 
       {/* Battery and Load Bars */}
-      <div style={styles.metricsContainer}>
+      <div style={styles.metricsContainer(isCompact)}>
         {/* Battery Capacity */}
-        <div style={styles.metricItem}>
+        <div style={styles.metricItem(isCompact)}>
           <div style={styles.metricLabelRow}>
             <span style={styles.metricLabel}>Battery Charge</span>
             <span style={styles.metricValue}>{battery}%</span>
@@ -94,7 +109,7 @@ export const UpsStatusCard: React.FC<UpsStatusCardProps> = ({
         </div>
 
         {/* System Load */}
-        <div style={styles.metricItem}>
+        <div style={styles.metricItem(isCompact)}>
           <div style={styles.metricLabelRow}>
             <div style={styles.loadLabel}>
               <Icon path={mdiFlash} size={0.5} color="#9ca3af" />
@@ -109,10 +124,10 @@ export const UpsStatusCard: React.FC<UpsStatusCardProps> = ({
       </div>
 
       {/* Footer Info */}
-      <div style={styles.footer}>
+      <div style={styles.footer(isCompact)}>
         <div style={styles.runtimeItem}>
-          <Icon path={mdiClockOutline} size={0.6} color="#9ca3af" />
-          <span style={styles.runtimeLabel}>Runtime Remaining:</span>
+          {!isCompact && <Icon path={mdiClockOutline} size={0.6} color="#9ca3af" />}
+          <span style={styles.runtimeLabel}>{isCompact ? 'Runtime:' : 'Runtime Remaining:'}</span>
           <span style={styles.runtimeValue}>{runtimeStr}</span>
         </div>
       </div>
@@ -121,18 +136,18 @@ export const UpsStatusCard: React.FC<UpsStatusCardProps> = ({
 };
 
 const styles = {
-  card: {
+  card: (isCompact: boolean) => ({
     display: 'flex',
     flexDirection: 'column' as const,
     height: '100%',
-    padding: '16px',
+    padding: isCompact ? '12px' : '16px',
     boxSizing: 'border-box' as const,
     background: 'linear-gradient(135deg, rgba(17, 24, 39, 0.75) 0%, rgba(10, 15, 30, 0.75) 100%)',
     borderRadius: '16px',
     border: '1px solid rgba(255, 255, 255, 0.05)',
     justifyContent: 'space-between',
     userSelect: 'none' as const,
-  },
+  }),
   header: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -174,17 +189,17 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
   },
-  metricsContainer: {
+  metricsContainer: (isCompact: boolean) => ({
     display: 'flex',
     flexDirection: 'column' as const,
-    gap: '12px',
-    margin: '14px 0',
-  },
-  metricItem: {
+    gap: isCompact ? '6px' : '12px',
+    margin: isCompact ? '8px 0' : '14px 0',
+  }),
+  metricItem: (isCompact: boolean) => ({
     display: 'flex',
     flexDirection: 'column' as const,
-    gap: '6px',
-  },
+    gap: isCompact ? '3px' : '6px',
+  }),
   metricLabelRow: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -237,10 +252,10 @@ const styles = {
       transition: 'width 0.4s ease',
     };
   },
-  footer: {
-    borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-    paddingTop: '10px',
-  },
+  footer: (isCompact: boolean) => ({
+    borderTop: isCompact ? 'none' : '1px solid rgba(255, 255, 255, 0.05)',
+    paddingTop: isCompact ? '0px' : '10px',
+  }),
   runtimeItem: {
     display: 'flex',
     alignItems: 'center',
