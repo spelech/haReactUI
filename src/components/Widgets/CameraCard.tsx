@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Icon } from '@mdi/react';
 import { mdiVideo, mdiFullscreen, mdiFullscreenExit, mdiRefresh } from '@mdi/js';
 import { getAuthSingleton, getSavedConnectionInfo } from '../../services/haConnection';
+import { useEntity } from '../../hooks/useEntity';
 
 interface CameraCardProps {
   entityId: string;
@@ -19,9 +20,15 @@ export const CameraCard: React.FC<CameraCardProps> = ({
   const [error, setError] = useState(false);
   const [refreshKey, setRefreshKey] = useState(Date.now());
 
+  const cameraEntity = useEntity(entityId);
+  const cameraToken = cameraEntity?.attributes?.access_token;
+
   const displayName = nameOverride || entityId.split('.')[1].replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
   useEffect(() => {
+    // Reset error state on refresh/load so that transient errors don't lock the card
+    setError(false);
+
     if (isDemo) {
       // Demo Mode: Use placeholder image
       setImgUrl(`https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=400&q=80`);
@@ -30,23 +37,32 @@ export const CameraCard: React.FC<CameraCardProps> = ({
 
     try {
       const connInfo = getSavedConnectionInfo();
-      const auth = getAuthSingleton();
       const hassUrl = connInfo.url.endsWith('/') ? connInfo.url.slice(0, -1) : connInfo.url;
-      const url = `${hassUrl}/api/camera_proxy/${entityId}?token=${auth.accessToken}`;
       
-      setImgUrl(`${url}&_cb=${refreshKey}`);
-
-      // Auto refresh snapshot every 2.5 seconds to simulate live video
-      const interval = setInterval(() => {
-        setRefreshKey(Date.now());
-      }, 2500);
-
-      return () => clearInterval(interval);
+      if (cameraToken) {
+        // Use the modern camera-specific access token
+        setImgUrl(`${hassUrl}/api/camera_proxy/${entityId}?token=${cameraToken}&_cb=${refreshKey}`);
+      } else {
+        // Fallback to connection token
+        const auth = getAuthSingleton();
+        setImgUrl(`${hassUrl}/api/camera_proxy/${entityId}?token=${auth.accessToken}&_cb=${refreshKey}`);
+      }
     } catch (e) {
       console.error('Error generating camera URL:', e);
       setError(true);
     }
-  }, [entityId, isDemo, refreshKey]);
+  }, [entityId, isDemo, refreshKey, cameraToken]);
+
+  useEffect(() => {
+    if (isDemo) return;
+
+    // Auto refresh snapshot every 2.5 seconds to simulate live video
+    const interval = setInterval(() => {
+      setRefreshKey(Date.now());
+    }, 2500);
+
+    return () => clearInterval(interval);
+  }, [isDemo]);
 
   const toggleFullscreen = (e: React.MouseEvent) => {
     e.stopPropagation();

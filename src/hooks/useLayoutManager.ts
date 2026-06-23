@@ -17,8 +17,8 @@ export interface WidgetConfig {
 }
 
 const STORAGE_KEYS = {
-  LAYOUTS: 'ha-dashboard-layouts-v4',
-  WIDGETS: 'ha-dashboard-widgets-v4',
+  LAYOUTS: 'ha-dashboard-layouts-v5',
+  WIDGETS: 'ha-dashboard-widgets-v5',
   CURRENT_VIEW: 'ha-dashboard-current-view',
 };
 
@@ -71,9 +71,9 @@ const DEFAULT_LAYOUTS: ViewLayouts = {
   home: {
     lg: [
       { i: 'h-weather', x: 0, y: 0, w: 2, h: 2, minW: 2, minH: 2 },
-      { i: 'h-thermostat', x: 2, y: 0, w: 2, h: 2, minW: 2, minH: 2 },
+      { i: 'h-thermostat', x: 2, y: 0, w: 2, h: 3, minW: 2, minH: 2 },
       { i: 'h-car', x: 0, y: 2, w: 2, h: 2, minW: 2, minH: 2 },
-      { i: 'h-printer', x: 2, y: 2, w: 2, h: 2, minW: 2, minH: 2 },
+      { i: 'h-printer', x: 2, y: 3, w: 2, h: 2, minW: 2, minH: 2 },
     ],
   },
   security: {
@@ -86,9 +86,9 @@ const DEFAULT_LAYOUTS: ViewLayouts = {
   },
   climate: {
     lg: [
-      { i: 'c-thermostat', x: 0, y: 0, w: 2, h: 2, minW: 2, minH: 2 },
+      { i: 'c-thermostat', x: 0, y: 0, w: 2, h: 3, minW: 2, minH: 2 },
       { i: 'c-temp-graph', x: 2, y: 0, w: 2, h: 2, minW: 2, minH: 2 },
-      { i: 'c-humidity-graph', x: 0, y: 2, w: 2, h: 2, minW: 2, minH: 2 },
+      { i: 'c-humidity-graph', x: 2, y: 2, w: 2, h: 2, minW: 2, minH: 2 },
     ],
   },
   media: {
@@ -213,6 +213,8 @@ export const useLayoutManager = () => {
         } else if (widget.type === 'alarm') {
           h = 4;
         } else if (widget.type === 'car') {
+          h = 3;
+        } else if (widget.type === 'thermostat') {
           h = 3;
         }
       }
