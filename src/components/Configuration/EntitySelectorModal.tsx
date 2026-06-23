@@ -6,7 +6,7 @@ interface EntitySelectorModalProps {
   onClose: () => void;
   onSelectEntity: (
     entityId: string,
-    type: 'light' | 'switch' | 'sensor' | 'media' | 'button' | 'toggle' | 'slider' | 'cover' | 'thermostat' | 'alarm' | 'remote'
+    type: 'light' | 'switch' | 'sensor' | 'media' | 'button' | 'toggle' | 'slider' | 'cover' | 'thermostat' | 'alarm' | 'remote' | 'camera' | 'weather' | 'graph' | 'adguard' | 'car' | 'printer' | 'ups' | 'general'
   ) => void;
 }
 
@@ -17,7 +17,7 @@ export const EntitySelectorModal: React.FC<EntitySelectorModalProps> = ({
 }) => {
   const [search, setSearch] = useState('');
   const [domainFilter, setDomainFilter] = useState<
-    'all' | 'light' | 'switch' | 'sensor' | 'media_player' | 'button' | 'input_boolean' | 'input_number' | 'cover' | 'climate' | 'alarm_control_panel' | 'remote'
+    'all' | 'light' | 'switch' | 'sensor' | 'media_player' | 'button' | 'input_boolean' | 'input_number' | 'cover' | 'climate' | 'alarm_control_panel' | 'remote' | 'camera' | 'weather'
   >('all');
   const entities = useHAStore((state) => state.entities);
 
@@ -47,6 +47,8 @@ export const EntitySelectorModal: React.FC<EntitySelectorModalProps> = ({
       'climate',
       'alarm_control_panel',
       'remote',
+      'camera',
+      'weather',
     ].includes(domain);
 
     if (!isSupportedDomain) return false;
@@ -63,8 +65,17 @@ export const EntitySelectorModal: React.FC<EntitySelectorModalProps> = ({
 
   const getWidgetType = (
     entityId: string
-  ): 'light' | 'switch' | 'sensor' | 'media' | 'button' | 'toggle' | 'slider' | 'cover' | 'thermostat' | 'alarm' | 'remote' => {
+  ): 'light' | 'switch' | 'sensor' | 'media' | 'button' | 'toggle' | 'slider' | 'cover' | 'thermostat' | 'alarm' | 'remote' | 'camera' | 'weather' | 'graph' | 'adguard' | 'car' | 'printer' | 'ups' => {
     const domain = entityId.split('.')[0];
+    
+    // Guess based on entity ID patterns for custom templates
+    if (entityId.includes('adguard') || entityId.includes('protection')) return 'adguard';
+    if (entityId.includes('es300h') || entityId.includes('fuel_level')) return 'car';
+    if (entityId.includes('octoprint') || entityId.includes('3d_printer')) return 'printer';
+    if (entityId.includes('ups')) return 'ups';
+    
+    if (domain === 'camera') return 'camera';
+    if (domain === 'weather') return 'weather';
     if (domain === 'light') return 'light';
     if (domain === 'switch') return 'switch';
     if (domain === 'media_player') return 'media';
@@ -75,6 +86,10 @@ export const EntitySelectorModal: React.FC<EntitySelectorModalProps> = ({
     if (domain === 'climate') return 'thermostat';
     if (domain === 'alarm_control_panel') return 'alarm';
     if (domain === 'remote') return 'remote';
+    
+    // Default temperature or humidity to a history graph sparkline
+    if (domain === 'sensor' && (entityId.includes('temp') || entityId.includes('humid'))) return 'graph';
+    
     return 'sensor';
   };
 
@@ -97,7 +112,7 @@ export const EntitySelectorModal: React.FC<EntitySelectorModalProps> = ({
         </div>
 
         <div style={styles.tabsContainer}>
-          {(['all', 'light', 'switch', 'sensor', 'media_player', 'button', 'input_boolean', 'input_number', 'cover', 'climate', 'alarm_control_panel', 'remote'] as const).map((tab) => (
+          {(['all', 'light', 'switch', 'sensor', 'media_player', 'button', 'input_boolean', 'input_number', 'cover', 'climate', 'alarm_control_panel', 'remote', 'camera', 'weather'] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setDomainFilter(tab)}

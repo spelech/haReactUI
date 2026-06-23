@@ -10,6 +10,7 @@ import { convertNumber } from '../../converters/numberConverter';
 import { convertCover } from '../../converters/coverConverter';
 import { convertClimate } from '../../converters/climateConverter';
 import { convertAlarm } from '../../converters/alarmConverter';
+import { convertWeather } from '../../converters/weatherConverter';
 import { LightCard } from './LightCard';
 import { SwitchCard } from './SwitchCard';
 import { SensorCard } from './SensorCard';
@@ -21,6 +22,13 @@ import { CoverCard } from './CoverCard';
 import { ThermostatCard } from './ThermostatCard';
 import { AlarmKeypadCard } from './AlarmKeypadCard';
 import { TvRemoteCard } from './TvRemoteCard';
+import { CameraCard } from './CameraCard';
+import { WeatherCard } from './WeatherCard';
+import { HistoryGraphCard } from './HistoryGraphCard';
+import { AdGuardCard } from './AdGuardCard';
+import { VehicleCard } from './VehicleCard';
+import { OctoPrinterCard } from './OctoPrinterCard';
+import { UpsStatusCard } from './UpsStatusCard';
 
 interface SmartWidgetProps {
   entityId: string;
@@ -611,6 +619,121 @@ export const SmartTvRemoteCard: React.FC<SmartWidgetProps> = ({
       onVolumeDown={handleVolumeDown}
       onMute={handleMute}
       onPowerToggle={handlePowerToggle}
+    />
+  );
+};
+
+export const SmartCameraCard: React.FC<SmartWidgetProps> = ({
+  entityId,
+  nameOverride,
+}) => {
+  const entity = useEntity(entityId);
+  return (
+    <CameraCard
+      entityId={entityId}
+      nameOverride={nameOverride}
+      isDemo={!entity}
+    />
+  );
+};
+
+export const SmartWeatherCard: React.FC<SmartWidgetProps> = ({
+  entityId,
+  nameOverride,
+}) => {
+  const entity = useEntity(entityId);
+
+  if (!entity) {
+    const mockProps = {
+      id: entityId,
+      name: nameOverride || 'Demo Weather',
+      state: 'partlycloudy',
+      temperature: 22,
+      humidity: 55,
+      windSpeed: 8,
+      pressure: 1012,
+      stateText: 'Partly Cloudy - 22°C (Demo)',
+    };
+    return <WeatherCard props={mockProps} nameOverride={nameOverride} />;
+  }
+
+  const props = convertWeather(entity);
+  return <WeatherCard props={props} nameOverride={nameOverride} />;
+};
+
+interface SmartHistoryGraphCardProps extends SmartWidgetProps {
+  color?: string;
+}
+
+export const SmartHistoryGraphCard: React.FC<SmartHistoryGraphCardProps> = ({
+  entityId,
+  nameOverride,
+  color,
+}) => {
+  const entity = useEntity(entityId);
+  return (
+    <HistoryGraphCard
+      entityId={entityId}
+      nameOverride={nameOverride}
+      color={color}
+      isDemo={!entity}
+    />
+  );
+};
+
+export const SmartAdGuardCard: React.FC<SmartWidgetProps> = ({
+  entityId,
+  nameOverride,
+}) => {
+  const entity = useEntity(entityId || 'switch.adguard_protection');
+  return (
+    <AdGuardCard
+      entityId={entityId}
+      nameOverride={nameOverride}
+      isDemo={!entity}
+    />
+  );
+};
+
+export const SmartVehicleCard: React.FC<SmartWidgetProps> = ({
+  nameOverride,
+}) => {
+  const entity = useEntity('sensor.fuel_level_es300h');
+  return (
+    <VehicleCard
+      nameOverride={nameOverride}
+      isDemo={!entity}
+    />
+  );
+};
+
+export const SmartOctoPrinterCard: React.FC<SmartWidgetProps> = ({
+  nameOverride,
+}) => {
+  const entity = useEntity('switch.3d_printer');
+  return (
+    <OctoPrinterCard
+      nameOverride={nameOverride}
+      isDemo={!entity}
+    />
+  );
+};
+
+interface SmartUpsStatusCardProps {
+  prefix: 'office' | 'server';
+  nameOverride?: string;
+}
+
+export const SmartUpsStatusCard: React.FC<SmartUpsStatusCardProps> = ({
+  prefix,
+  nameOverride,
+}) => {
+  const entity = useEntity(prefix === 'office' ? 'sensor.office_ups_status' : 'sensor.server_ups_status');
+  return (
+    <UpsStatusCard
+      prefix={prefix}
+      nameOverride={nameOverride}
+      isDemo={!entity}
     />
   );
 };

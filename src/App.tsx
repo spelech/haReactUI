@@ -6,6 +6,17 @@ import { DashboardGrid } from './components/Grid/DashboardGrid';
 import { EditToolbar } from './components/Configuration/EditToolbar';
 import { EntitySelectorModal } from './components/Configuration/EntitySelectorModal';
 import { WidgetConfigModal } from './components/Configuration/WidgetConfigModal';
+import { Icon } from '@mdi/react';
+import {
+  mdiHome,
+  mdiShieldLock,
+  mdiThermostat,
+  mdiCast,
+  mdiVideo,
+  mdiCar,
+  mdiServer,
+  mdiLan,
+} from '@mdi/js';
 import {
   SmartLightCard,
   SmartSwitchCard,
@@ -18,11 +29,32 @@ import {
   SmartThermostatCard,
   SmartAlarmKeypadCard,
   SmartTvRemoteCard,
+  SmartCameraCard,
+  SmartWeatherCard,
+  SmartHistoryGraphCard,
+  SmartAdGuardCard,
+  SmartVehicleCard,
+  SmartOctoPrinterCard,
+  SmartUpsStatusCard,
 } from './components/Widgets/SmartWidgets';
+
+// Subview navigation items
+const VIEW_ITEMS = [
+  { id: 'home', label: 'Home', icon: mdiHome },
+  { id: 'security', label: 'Security', icon: mdiShieldLock },
+  { id: 'climate', label: 'Climate', icon: mdiThermostat },
+  { id: 'media', label: 'Media', icon: mdiCast },
+  { id: 'cameras', label: 'Cameras', icon: mdiVideo },
+  { id: 'car', label: 'Car Status', icon: mdiCar },
+  { id: 'server', label: 'Server Monitor', icon: mdiServer },
+  { id: 'network', label: 'Network', icon: mdiLan },
+];
 
 const DashboardContent: React.FC = () => {
   const { logout } = useHA();
   const {
+    currentView,
+    setCurrentView,
     widgets,
     layouts,
     isEditing,
@@ -138,45 +170,123 @@ const DashboardContent: React.FC = () => {
             nameOverride={overrides?.name}
           />
         );
+      case 'camera':
+        return (
+          <SmartCameraCard
+            entityId={widget.entityId}
+            nameOverride={overrides?.name}
+          />
+        );
+      case 'weather':
+        return (
+          <SmartWeatherCard
+            entityId={widget.entityId}
+            nameOverride={overrides?.name}
+          />
+        );
+      case 'graph':
+        return (
+          <SmartHistoryGraphCard
+            entityId={widget.entityId}
+            nameOverride={overrides?.name}
+            color={overrides?.color}
+          />
+        );
+      case 'adguard':
+        return (
+          <SmartAdGuardCard
+            entityId={widget.entityId}
+            nameOverride={overrides?.name}
+          />
+        );
+      case 'car':
+        return (
+          <SmartVehicleCard
+            entityId={widget.entityId}
+            nameOverride={overrides?.name}
+          />
+        );
+      case 'printer':
+        return (
+          <SmartOctoPrinterCard
+            entityId={widget.entityId}
+            nameOverride={overrides?.name}
+          />
+        );
+      case 'ups':
+        return (
+          <SmartUpsStatusCard
+            prefix={overrides?.prefix || 'office'}
+            nameOverride={overrides?.name}
+          />
+        );
       default:
         return <div style={{ padding: '16px', color: '#9ca3af' }}>Unsupported widget</div>;
     }
   };
 
   return (
-    <div style={styles.dashboardContainer}>
-      <EditToolbar
-        isEditing={isEditing}
-        onToggleEdit={() => setIsEditing(!isEditing)}
-        onAddWidget={() => setIsSelectorOpen(true)}
-        onLogout={logout}
-      />
+    <div style={styles.appContainer}>
+      {/* Sidebar Navigation */}
+      <aside style={styles.sidebar}>
+        <div style={styles.sidebarHeader}>
+          <div style={styles.brandLogo} />
+          <span style={styles.brandName}>Wiley Home</span>
+        </div>
+        <nav style={styles.navigation}>
+          {VIEW_ITEMS.map((item) => {
+            const isActive = currentView === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setCurrentView(item.id)}
+                style={styles.navItem(isActive)}
+              >
+                <Icon path={item.icon} size={0.8} color={isActive ? '#3b82f6' : '#9ca3af'} />
+                <span style={styles.navLabel(isActive)}>{item.label}</span>
+              </button>
+            );
+          })}
+        </nav>
+      </aside>
 
-      <main style={styles.mainContent}>
-        {/* Welcome & Clock Header */}
-        <header style={styles.header}>
-          <div style={styles.welcomeSection}>
-            <h1 style={styles.welcomeTitle}>Wiley Home</h1>
-            <p style={styles.welcomeSubtitle}>Smart Dashboard</p>
-          </div>
-          <div style={styles.clockSection}>
-            <div style={styles.timeText}>{timeString}</div>
-            <div style={styles.dateText}>{dateString}</div>
-          </div>
-        </header>
-
-        {/* Dashboard Grid */}
-        <DashboardGrid
-          widgets={widgets}
-          layouts={layouts}
+      {/* Main View Container */}
+      <div style={styles.dashboardContainer}>
+        <EditToolbar
           isEditing={isEditing}
-          onLayoutChange={handleLayoutChange}
-          onRemoveWidget={removeWidget}
-          onConfigureWidget={(w) => setConfigWidget(w)}
-        >
-          {renderWidgetContent}
-        </DashboardGrid>
-      </main>
+          onToggleEdit={() => setIsEditing(!isEditing)}
+          onAddWidget={() => setIsSelectorOpen(true)}
+          onLogout={logout}
+        />
+
+        <main style={styles.mainContent}>
+          {/* Welcome & Clock Header */}
+          <header style={styles.header}>
+            <div style={styles.welcomeSection}>
+              <h1 style={styles.welcomeTitle}>
+                {VIEW_ITEMS.find((v) => v.id === currentView)?.label || 'Wiley Home'}
+              </h1>
+              <p style={styles.welcomeSubtitle}>Smart Dashboard</p>
+            </div>
+            <div style={styles.clockSection}>
+              <div style={styles.timeText}>{timeString}</div>
+              <div style={styles.dateText}>{dateString}</div>
+            </div>
+          </header>
+
+          {/* Dashboard Grid */}
+          <DashboardGrid
+            widgets={widgets}
+            layouts={layouts}
+            isEditing={isEditing}
+            onLayoutChange={handleLayoutChange}
+            onRemoveWidget={removeWidget}
+            onConfigureWidget={(w) => setConfigWidget(w)}
+          >
+            {renderWidgetContent}
+          </DashboardGrid>
+        </main>
+      </div>
 
       {/* Add Widget Selector Modal */}
       <EntitySelectorModal
@@ -209,13 +319,77 @@ function App() {
 }
 
 const styles = {
-  dashboardContainer: {
+  appContainer: {
+    display: 'flex',
     minHeight: '100vh',
     width: '100vw',
     backgroundColor: '#070a13',
-    backgroundImage: 'radial-gradient(circle at 50% 0%, rgba(30, 41, 59, 0.5) 0%, rgba(7, 10, 19, 1) 100%)',
-    color: '#f3f4f6',
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    backgroundImage: 'radial-gradient(circle at 50% 0%, rgba(30, 41, 59, 0.4) 0%, rgba(7, 10, 19, 1) 100%)',
+    overflowX: 'hidden' as const,
+  },
+  sidebar: {
+    width: '240px',
+    backgroundColor: 'rgba(17, 24, 39, 0.4)',
+    borderRight: '1px solid rgba(255, 255, 255, 0.05)',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    padding: '24px 16px',
+    boxSizing: 'border-box' as const,
+    backdropFilter: 'blur(16px)',
+    zIndex: 10,
+    '@media (max-width: 768px)': {
+      display: 'none',
+    },
+  },
+  sidebarHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    marginBottom: '32px',
+    paddingLeft: '8px',
+  },
+  brandLogo: {
+    width: '24px',
+    height: '24px',
+    borderRadius: '6px',
+    background: 'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)',
+    boxShadow: '0 0 10px rgba(59, 130, 246, 0.5)',
+  },
+  brandName: {
+    fontSize: '16px',
+    fontWeight: 700,
+    color: '#ffffff',
+    letterSpacing: '-0.3px',
+  },
+  navigation: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '6px',
+  },
+  navItem: (isActive: boolean) => ({
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '12px 16px',
+    borderRadius: '12px',
+    border: 'none',
+    backgroundColor: isActive ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
+    cursor: 'pointer',
+    width: '100%',
+    textAlign: 'left' as const,
+    outline: 'none',
+    transition: 'all 0.2s ease',
+    ':hover': {
+      backgroundColor: isActive ? 'rgba(59, 130, 246, 0.1)' : 'rgba(255, 255, 255, 0.02)',
+    },
+  }),
+  navLabel: (isActive: boolean) => ({
+    fontSize: '13px',
+    fontWeight: isActive ? 600 : 500,
+    color: isActive ? '#3b82f6' : '#9ca3af',
+  }),
+  dashboardContainer: {
+    flex: 1,
     display: 'flex',
     flexDirection: 'column' as const,
     boxSizing: 'border-box' as const,
@@ -224,8 +398,8 @@ const styles = {
   mainContent: {
     flex: 1,
     padding: '24px',
-    maxWidth: '1280px',
     width: '100%',
+    maxWidth: '1280px',
     margin: '0 auto',
     boxSizing: 'border-box' as const,
   },
@@ -234,7 +408,7 @@ const styles = {
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: '32px',
-    padding: '0 16px',
+    padding: '0 8px',
     flexWrap: 'wrap' as const,
     gap: '16px',
   },
