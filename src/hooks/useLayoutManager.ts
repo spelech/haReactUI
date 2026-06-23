@@ -24,20 +24,20 @@ const DEFAULT_WIDGETS: WidgetConfig[] = [
   {
     id: 'widget-family-room-light',
     type: 'light',
-    entityId: 'light.family_room_lights',
-    overrides: { name: 'Family Room Lights' },
+    entityId: 'light.family_room_lamps',
+    overrides: { name: 'Family Room Lamps' },
   },
   {
     id: 'widget-living-room-front-light',
     type: 'light',
     entityId: 'light.living_room_front_row',
-    overrides: { name: 'Living Room Front' },
+    overrides: { name: 'Living Room Front Row' },
   },
   {
     id: 'widget-family-room-shades',
     type: 'cover',
-    entityId: 'cover.family_room_shades',
-    overrides: { name: 'Family Room Shades' },
+    entityId: 'cover.family_room_left_shade',
+    overrides: { name: 'Family Room Left Shade' },
   },
 ];
 
