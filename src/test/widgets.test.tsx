@@ -8,6 +8,10 @@ import { ButtonCard } from '../components/Widgets/ButtonCard';
 import { ToggleCard } from '../components/Widgets/ToggleCard';
 import { SliderCard } from '../components/Widgets/SliderCard';
 import { CoverCard } from '../components/Widgets/CoverCard';
+import { ThermostatCard } from '../components/Widgets/ThermostatCard';
+import { AlarmKeypadCard } from '../components/Widgets/AlarmKeypadCard';
+import { TvRemoteCard } from '../components/Widgets/TvRemoteCard';
+import { SecureButton } from '../components/Widgets/SecureButton';
 
 describe('Widget Components (Dumb)', () => {
   describe('LightCard', () => {
@@ -284,6 +288,124 @@ describe('Widget Components (Dumb)', () => {
       const closeBtn = screen.getByRole('button', { name: 'Close cover' });
       fireEvent.click(closeBtn);
       expect(onClose).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('ThermostatCard', () => {
+    it('should render and handle adjustments', () => {
+      const onChangeTargetTemp = vi.fn();
+      const onChangeMode = vi.fn();
+      const mockProps = {
+        id: 'climate.test',
+        name: 'Ecobee',
+        state: 'heat',
+        currentTemperature: 20,
+        targetTemperature: 21,
+        minTemp: 15,
+        maxTemp: 30,
+        hvacModes: ['off', 'heat', 'cool'],
+        stateText: 'HEAT (Target: 21°C)',
+      };
+
+      render(
+        <ThermostatCard
+          props={mockProps}
+          onChangeTargetTemp={onChangeTargetTemp}
+          onChangeMode={onChangeMode}
+        />
+      );
+
+      expect(screen.getByText('Ecobee')).toBeInTheDocument();
+      expect(screen.getByText('Current: 20°C')).toBeInTheDocument();
+
+      const incBtn = screen.getByRole('button', { name: 'Increase temperature' });
+      fireEvent.click(incBtn);
+      expect(onChangeTargetTemp).toHaveBeenCalledWith(21.5);
+    });
+  });
+
+  describe('AlarmKeypadCard', () => {
+    it('should render digits and keypad actions', () => {
+      const onArmHome = vi.fn();
+      const onArmAway = vi.fn();
+      const onDisarm = vi.fn();
+      const mockProps = {
+        id: 'alarm_control_panel.test',
+        name: 'Ring Alarm',
+        state: 'disarmed',
+        codeRequired: true,
+        stateText: 'Disarmed',
+      };
+
+      render(
+        <AlarmKeypadCard
+          props={mockProps}
+          onArmHome={onArmHome}
+          onArmAway={onArmAway}
+          onDisarm={onDisarm}
+        />
+      );
+
+      expect(screen.getByText('Ring Alarm')).toBeInTheDocument();
+
+      const key1 = screen.getByRole('button', { name: '1' });
+      fireEvent.click(key1);
+
+      const armHomeBtn = screen.getByRole('button', { name: 'Arm Home' });
+      fireEvent.click(armHomeBtn);
+      expect(onArmHome).toHaveBeenCalledWith('1');
+    });
+  });
+
+  describe('TvRemoteCard', () => {
+    it('should emit commands when keys are pressed', () => {
+      const onSendCommand = vi.fn();
+      const onVolumeUp = vi.fn();
+      const onVolumeDown = vi.fn();
+      const onMute = vi.fn();
+      const onPowerToggle = vi.fn();
+
+      render(
+        <TvRemoteCard
+          name="Living Room TV"
+          onSendCommand={onSendCommand}
+          onVolumeUp={onVolumeUp}
+          onVolumeDown={onVolumeDown}
+          onMute={onMute}
+          onPowerToggle={onPowerToggle}
+        />
+      );
+
+      expect(screen.getByText('Living Room TV')).toBeInTheDocument();
+
+      const upBtn = screen.getByRole('button', { name: 'Up' });
+      fireEvent.click(upBtn);
+      expect(onSendCommand).toHaveBeenCalledWith('up');
+
+      const volUpBtn = screen.getByRole('button', { name: 'Volume Up' });
+      fireEvent.click(volUpBtn);
+      expect(onVolumeUp).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('SecureButton', () => {
+    it('should require double click confirmation', () => {
+      const onConfirm = vi.fn();
+
+      render(
+        <SecureButton
+          onConfirm={onConfirm}
+          label="Sirens"
+          confirmLabel="Fire Siren"
+        />
+      );
+
+      const btn = screen.getByRole('button', { name: 'Sirens' });
+      fireEvent.click(btn);
+      expect(onConfirm).not.toHaveBeenCalled();
+
+      fireEvent.click(btn);
+      expect(onConfirm).toHaveBeenCalledTimes(1);
     });
   });
 });

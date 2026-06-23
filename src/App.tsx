@@ -15,6 +15,9 @@ import {
   SmartToggleCard,
   SmartSliderCard,
   SmartCoverCard,
+  SmartThermostatCard,
+  SmartAlarmKeypadCard,
+  SmartTvRemoteCard,
 } from './components/Widgets/SmartWidgets';
 
 const DashboardContent: React.FC = () => {
@@ -112,6 +115,27 @@ const DashboardContent: React.FC = () => {
             entityId={widget.entityId}
             nameOverride={overrides?.name}
             iconOverride={overrides?.icon}
+          />
+        );
+      case 'thermostat':
+        return (
+          <SmartThermostatCard
+            entityId={widget.entityId}
+            nameOverride={overrides?.name}
+          />
+        );
+      case 'alarm':
+        return (
+          <SmartAlarmKeypadCard
+            entityId={widget.entityId}
+            nameOverride={overrides?.name}
+          />
+        );
+      case 'remote':
+        return (
+          <SmartTvRemoteCard
+            entityId={widget.entityId}
+            nameOverride={overrides?.name}
           />
         );
       default:
