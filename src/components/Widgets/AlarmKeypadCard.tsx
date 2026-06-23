@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Icon from '@mdi/react';
+import { Icon } from '@mdi/react';
 import { mdiShieldLock, mdiShieldOff, mdiDelete } from '@mdi/js';
 import type { AlarmProps } from '../../converters/alarmConverter';
 

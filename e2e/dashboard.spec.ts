@@ -42,7 +42,7 @@ test.describe('Wiley Home Dashboard E2E', () => {
     await expect(page.getByRole('heading', { name: 'Add Widget' })).toBeVisible();
 
     // Close the modal
-    const closeBtn = page.getByRole('button', { name: 'Close' });
+    const closeBtn = page.getByRole('button', { name: 'Close', exact: true });
     await closeBtn.click();
 
     // Verify modal is closed

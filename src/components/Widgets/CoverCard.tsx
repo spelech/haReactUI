@@ -1,5 +1,5 @@
 import React from 'react';
-import Icon from '@mdi/react';
+import { Icon } from '@mdi/react';
 import { mdiArrowUp, mdiStop, mdiArrowDown, mdiWindowShutter } from '@mdi/js';
 import type { CoverProps } from '../../converters/coverConverter';
 

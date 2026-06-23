@@ -1,5 +1,5 @@
 import React from 'react';
-import Icon from '@mdi/react';
+import { Icon } from '@mdi/react';
 import { mdiMinus, mdiPlus, mdiThermostat } from '@mdi/js';
 import type { ClimateProps } from '../../converters/climateConverter';
 

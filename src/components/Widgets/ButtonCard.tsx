@@ -1,5 +1,5 @@
 import React from 'react';
-import Icon from '@mdi/react';
+import { Icon } from '@mdi/react';
 import { mdiGestureTap } from '@mdi/js';
 import type { ButtonProps } from '../../converters/buttonConverter';
 

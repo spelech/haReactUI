@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Icon from '@mdi/react';
+import { Icon } from '@mdi/react';
 import { mdiMinus, mdiPlus } from '@mdi/js';
 import type { NumberProps } from '../../converters/numberConverter';
 

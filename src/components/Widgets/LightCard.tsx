@@ -1,5 +1,5 @@
 import React from 'react';
-import Icon from '@mdi/react';
+import { Icon } from '@mdi/react';
 import { mdiLightbulb, mdiLightbulbOutline } from '@mdi/js';
 import type { LightProps } from '../../converters/lightConverter';
 
