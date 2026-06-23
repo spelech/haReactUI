@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useEntity } from '../../hooks/useEntity';
-import { callService } from '../../services/haConnection';
+import { callService, getConnection } from '../../services/haConnection';
 import { convertLight } from '../../converters/lightConverter';
 import { convertSwitch } from '../../converters/switchConverter';
 import { convertSensor } from '../../converters/sensorConverter';
@@ -642,6 +642,46 @@ export const SmartWeatherCard: React.FC<SmartWidgetProps> = ({
   nameOverride,
 }) => {
   const entity = useEntity(entityId);
+  const [forecast, setForecast] = useState<any[] | undefined>(undefined);
+
+  useEffect(() => {
+    if (!entity || !entityId) return;
+
+    let unsub: (() => void) | undefined;
+
+    const subscribe = async () => {
+      try {
+        const connection = getConnection();
+        
+        // Determine forecast type: weather.homehourly is usually "hourly", others default to "daily"
+        const isHourly = entityId.includes('hourly');
+        const forecastType = isHourly ? 'hourly' : 'daily';
+
+        const message = {
+          type: 'weather/subscribe_forecast',
+          entity_id: entityId,
+          forecast_type: forecastType,
+        };
+
+        unsub = await connection.subscribeMessage(
+          (event: any) => {
+            if (event?.forecast) {
+              setForecast(event.forecast);
+            }
+          },
+          message
+        );
+      } catch (e) {
+        console.error('Error subscribing to weather forecast:', e);
+      }
+    };
+
+    subscribe();
+
+    return () => {
+      if (unsub) unsub();
+    };
+  }, [entityId, entity === undefined]);
 
   if (!entity) {
     const mockProps = {
@@ -657,7 +697,11 @@ export const SmartWeatherCard: React.FC<SmartWidgetProps> = ({
     return <WeatherCard props={mockProps} nameOverride={nameOverride} />;
   }
 
-  const props = convertWeather(entity);
+  const convertedProps = convertWeather(entity);
+  const props = {
+    ...convertedProps,
+    forecast: forecast !== undefined ? forecast : convertedProps.forecast,
+  };
   return <WeatherCard props={props} nameOverride={nameOverride} />;
 };
 

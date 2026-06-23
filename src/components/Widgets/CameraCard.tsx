@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Icon } from '@mdi/react';
 import { mdiVideo, mdiFullscreen, mdiFullscreenExit, mdiRefresh } from '@mdi/js';
 import { getAuthSingleton, getSavedConnectionInfo } from '../../services/haConnection';
@@ -111,7 +112,7 @@ export const CameraCard: React.FC<CameraCardProps> = ({
       </div>
 
       {/* Fullscreen Portal / Overlay */}
-      {isFullscreen && (
+      {isFullscreen && createPortal(
         <div style={styles.fullscreenOverlay} onClick={toggleFullscreen}>
           <div style={styles.fullscreenContent} onClick={(e) => e.stopPropagation()}>
             <div style={styles.fullscreenHeader}>
@@ -136,7 +137,8 @@ export const CameraCard: React.FC<CameraCardProps> = ({
               )}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

@@ -316,7 +316,7 @@ describe('Widget Components (Dumb)', () => {
       );
 
       expect(screen.getByText('Ecobee')).toBeInTheDocument();
-      expect(screen.getByText('Current: 20°C')).toBeInTheDocument();
+      expect(screen.getByText('Current: 20°')).toBeInTheDocument();
 
       const incBtn = screen.getByRole('button', { name: 'Increase temperature' });
       fireEvent.click(incBtn);

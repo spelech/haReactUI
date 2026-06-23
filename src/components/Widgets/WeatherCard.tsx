@@ -93,6 +93,21 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({ props, nameOverride })
   const formatDay = (dateStr: string) => {
     try {
       const date = new Date(dateStr);
+      
+      // Check if forecast is hourly
+      let isHourly = false;
+      if (forecast && forecast.length > 1) {
+        const d1 = new Date(forecast[0].datetime);
+        const d2 = new Date(forecast[1].datetime);
+        const diffHours = Math.abs(d2.getTime() - d1.getTime()) / 3600000;
+        if (diffHours < 12) {
+          isHourly = true;
+        }
+      }
+
+      if (isHourly) {
+        return date.toLocaleTimeString([], { hour: 'numeric', hour12: true }).replace(':00', '');
+      }
       return date.toLocaleDateString([], { weekday: 'short' });
     } catch {
       return dateStr;

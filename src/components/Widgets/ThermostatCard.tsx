@@ -72,7 +72,7 @@ export const ThermostatCard: React.FC<ThermostatCardProps> = ({
             {isOff ? '--' : `${targetTemperature}°`}
           </span>
           <span style={styles.currentTemp}>
-            Current: {currentTemperature}°C
+            Current: {currentTemperature}°
           </span>
         </div>
 
