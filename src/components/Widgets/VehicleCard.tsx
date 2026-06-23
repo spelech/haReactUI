@@ -30,6 +30,21 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
   const isRunning = isDemo || !remoteStartSensor ? false : remoteStartSensor.state === 'on';
 
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [cardHeight, setCardHeight] = useState<number>(300);
+
+  React.useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setCardHeight(entry.contentRect.height);
+      }
+    });
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const showActions = cardHeight > 190;
 
   const handleLockToggle = async () => {
     if (isDemo || !lockEntity) return;
@@ -58,7 +73,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
   };
 
   return (
-    <div style={styles.card}>
+    <div ref={containerRef} style={styles.card}>
       {/* Title Header */}
       <div style={styles.header}>
         <div style={styles.headerLeft}>
@@ -109,20 +124,22 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
       </div>
 
       {/* Control Buttons */}
-      <div style={styles.actions}>
-        <button
-          style={styles.startBtn(isRunning)}
-          onClick={handleRemoteStart}
-          disabled={loadingAction !== null}
-        >
-          <Icon
-            path={isRunning ? mdiEngine : mdiEngineOutline}
-            size={0.9}
-            color={isRunning ? '#ef4444' : '#60a5fa'}
-          />
-          <span>{isRunning ? 'Stop Engine' : 'Remote Start'}</span>
-        </button>
-      </div>
+      {showActions && (
+        <div style={styles.actions}>
+          <button
+            style={styles.startBtn(isRunning)}
+            onClick={handleRemoteStart}
+            disabled={loadingAction !== null}
+          >
+            <Icon
+              path={isRunning ? mdiEngine : mdiEngineOutline}
+              size={0.9}
+              color={isRunning ? '#ef4444' : '#60a5fa'}
+            />
+            <span>{isRunning ? 'Stop Engine' : 'Remote Start'}</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 };

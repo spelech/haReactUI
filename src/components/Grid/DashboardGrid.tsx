@@ -97,6 +97,7 @@ const styles = {
   gridItem: (isEditing: boolean) => ({
     display: 'flex',
     flexDirection: 'column' as const,
+    height: '100%',
     backgroundColor: '#111827',
     border: isEditing ? '1px dashed #3b82f6' : '1px solid #1f2937',
     borderRadius: '12px',

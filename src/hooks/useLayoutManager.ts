@@ -93,7 +93,7 @@ const DEFAULT_LAYOUTS: ViewLayouts = {
   },
   media: {
     lg: [
-      { i: 'm-remote', x: 0, y: 0, w: 2, h: 3, minW: 2, minH: 2 },
+      { i: 'm-remote', x: 0, y: 0, w: 2, h: 4, minW: 2, minH: 2 },
       { i: 'm-player', x: 2, y: 0, w: 2, h: 2, minW: 2, minH: 2 },
     ],
   },

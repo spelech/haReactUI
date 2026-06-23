@@ -162,7 +162,7 @@ const styles = {
     display: 'flex',
     flexDirection: 'column' as const,
     height: '100%',
-    padding: '16px',
+    padding: '12px',
     boxSizing: 'border-box' as const,
     background: 'linear-gradient(135deg, rgba(17, 24, 39, 0.75) 0%, rgba(10, 15, 30, 0.75) 100%)',
     borderRadius: '16px',
@@ -206,8 +206,8 @@ const styles = {
   statsRow: {
     display: 'flex',
     gap: '12px',
-    margin: '12px 0',
-    padding: '8px 0',
+    margin: '6px 0',
+    padding: '4px 0',
     borderTop: '1px solid rgba(255, 255, 255, 0.05)',
     borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
   },
@@ -229,7 +229,7 @@ const styles = {
     display: 'flex',
     flexDirection: 'column' as const,
     alignItems: 'center',
-    gap: '6px',
+    gap: '4px',
   },
   forecastDayName: {
     fontSize: '10px',
