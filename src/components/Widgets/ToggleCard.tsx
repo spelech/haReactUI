@@ -19,8 +19,45 @@ export const ToggleCard: React.FC<ToggleCardProps> = ({
   const { isOn, stateText } = props;
   const displayName = nameOverride || props.name;
 
+  const cardRef = React.useRef<HTMLDivElement>(null);
+  const [isCompact, setIsCompact] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!cardRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setIsCompact(entry.contentRect.height < 110);
+      }
+    });
+    observer.observe(cardRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  if (isCompact) {
+    return (
+      <div ref={cardRef} style={styles.compactCard(isOn)} onClick={onToggle} role="button" aria-label={`Toggle ${displayName}`}>
+        <div style={styles.compactLeft}>
+          <div style={styles.iconContainer(isOn)}>
+            <Icon
+              path={iconOverride || mdiLightbulbOutline}
+              size={0.9}
+              color={isOn ? '#10b981' : '#9ca3af'}
+            />
+          </div>
+          <div style={styles.compactInfo}>
+            <span style={styles.compactName}>{displayName}</span>
+            <span style={styles.compactState(isOn)}>{stateText}</span>
+          </div>
+        </div>
+        <div style={styles.toggleTrack(isOn)}>
+          <div style={styles.toggleThumb(isOn)} />
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div style={styles.card(isOn)} onClick={onToggle} role="button" aria-label={`Toggle ${displayName}`}>
+    <div ref={cardRef} style={styles.card(isOn)} onClick={onToggle} role="button" aria-label={`Toggle ${displayName}`}>
       <div style={styles.content}>
         <div style={styles.header}>
           <div style={styles.iconContainer(isOn)}>
@@ -81,6 +118,7 @@ const styles = {
     borderRadius: '10px',
     backgroundColor: isOn ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.05)',
     transition: 'background-color 0.2s',
+    flexShrink: 0,
   }),
   toggleTrack: (isOn: boolean) => ({
     width: '32px',
@@ -89,6 +127,7 @@ const styles = {
     backgroundColor: isOn ? '#10b981' : 'rgba(255, 255, 255, 0.1)',
     position: 'relative' as const,
     transition: 'background-color 0.2s',
+    flexShrink: 0,
   }),
   toggleThumb: (isOn: boolean) => ({
     width: '12px',
@@ -120,5 +159,48 @@ const styles = {
     color: isOn ? '#10b981' : '#9ca3af',
     fontWeight: 500,
     marginTop: '2px',
+  }),
+  compactCard: (isOn: boolean) => ({
+    display: 'flex',
+    flexDirection: 'row' as const,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    height: '100%',
+    padding: '12px',
+    boxSizing: 'border-box' as const,
+    background: isOn
+      ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(10, 15, 30, 0.75) 100%)'
+      : 'linear-gradient(135deg, rgba(17, 24, 39, 0.75) 0%, rgba(10, 15, 30, 0.75) 100%)',
+    border: isOn ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid transparent',
+    borderRadius: '12px',
+    transition: 'all 0.25s ease',
+    cursor: 'pointer',
+    userSelect: 'none' as const,
+  }),
+  compactLeft: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    overflow: 'hidden',
+    flex: 1,
+  },
+  compactInfo: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    overflow: 'hidden',
+  },
+  compactName: {
+    fontSize: '13px',
+    fontWeight: 600,
+    color: '#f3f4f6',
+    whiteSpace: 'nowrap' as const,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+  compactState: (isOn: boolean) => ({
+    fontSize: '11px',
+    color: isOn ? '#10b981' : '#9ca3af',
+    fontWeight: 500,
+    marginTop: '1px',
   }),
 };

@@ -32,8 +32,22 @@ export const TvRemoteCard: React.FC<TvRemoteCardProps> = ({
   onMute,
   onPowerToggle,
 }) => {
+  const cardRef = React.useRef<HTMLDivElement>(null);
+  const [isCompact, setIsCompact] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!cardRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setIsCompact(entry.contentRect.height < 360);
+      }
+    });
+    observer.observe(cardRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div style={styles.card} role="region" aria-label={`TV Remote Control for ${name}`}>
+    <div ref={cardRef} style={styles.card(isCompact)} role="region" aria-label={`TV Remote Control for ${name}`}>
       <div style={styles.header}>
         <h3 style={styles.name}>{name}</h3>
         <button onClick={onPowerToggle} style={styles.powerBtn} aria-label="Toggle Power">
@@ -41,57 +55,57 @@ export const TvRemoteCard: React.FC<TvRemoteCardProps> = ({
         </button>
       </div>
 
-      <div style={styles.dpadContainer}>
+      <div style={styles.dpadContainer(isCompact)}>
         <div style={styles.dpadSpacer} />
-        <button onClick={() => onSendCommand('up')} style={styles.dpadBtn('up')} aria-label="Up">
-          <Icon path={mdiChevronUp} size={0.9} color="#ffffff" />
+        <button onClick={() => onSendCommand('up')} style={styles.dpadBtn('up', isCompact)} aria-label="Up">
+          <Icon path={mdiChevronUp} size={isCompact ? 0.75 : 0.9} color="#ffffff" />
         </button>
         <div style={styles.dpadSpacer} />
 
-        <button onClick={() => onSendCommand('left')} style={styles.dpadBtn('left')} aria-label="Left">
-          <Icon path={mdiChevronLeft} size={0.9} color="#ffffff" />
+        <button onClick={() => onSendCommand('left')} style={styles.dpadBtn('left', isCompact)} aria-label="Left">
+          <Icon path={mdiChevronLeft} size={isCompact ? 0.75 : 0.9} color="#ffffff" />
         </button>
-        <button onClick={() => onSendCommand('select')} style={styles.dpadSelect} aria-label="Select">
+        <button onClick={() => onSendCommand('select')} style={styles.dpadSelect(isCompact)} aria-label="Select">
           OK
         </button>
-        <button onClick={() => onSendCommand('right')} style={styles.dpadBtn('right')} aria-label="Right">
-          <Icon path={mdiChevronRight} size={0.9} color="#ffffff" />
+        <button onClick={() => onSendCommand('right')} style={styles.dpadBtn('right', isCompact)} aria-label="Right">
+          <Icon path={mdiChevronRight} size={isCompact ? 0.75 : 0.9} color="#ffffff" />
         </button>
 
         <div style={styles.dpadSpacer} />
-        <button onClick={() => onSendCommand('down')} style={styles.dpadBtn('down')} aria-label="Down">
-          <Icon path={mdiChevronDown} size={0.9} color="#ffffff" />
+        <button onClick={() => onSendCommand('down')} style={styles.dpadBtn('down', isCompact)} aria-label="Down">
+          <Icon path={mdiChevronDown} size={isCompact ? 0.75 : 0.9} color="#ffffff" />
         </button>
         <div style={styles.dpadSpacer} />
       </div>
 
-      <div style={styles.navRow}>
-        <button onClick={() => onSendCommand('back')} style={styles.navBtn} aria-label="Back">
-          <Icon path={mdiArrowLeft} size={0.8} color="#9ca3af" />
+      <div style={styles.navRow(isCompact)}>
+        <button onClick={() => onSendCommand('back')} style={styles.navBtn(isCompact)} aria-label="Back">
+          <Icon path={mdiArrowLeft} size={isCompact ? 0.65 : 0.8} color="#9ca3af" />
         </button>
-        <button onClick={() => onSendCommand('home')} style={styles.navBtn} aria-label="Home">
-          <Icon path={mdiHome} size={0.8} color="#9ca3af" />
-        </button>
-      </div>
-
-      <div style={styles.mediaRow}>
-        <button onClick={() => onSendCommand('play')} style={styles.navBtn} aria-label="Play">
-          <Icon path={mdiPlay} size={0.8} color="#9ca3af" />
-        </button>
-        <button onClick={() => onSendCommand('pause')} style={styles.navBtn} aria-label="Pause">
-          <Icon path={mdiPause} size={0.8} color="#9ca3af" />
+        <button onClick={() => onSendCommand('home')} style={styles.navBtn(isCompact)} aria-label="Home">
+          <Icon path={mdiHome} size={isCompact ? 0.65 : 0.8} color="#9ca3af" />
         </button>
       </div>
 
-      <div style={styles.volumeControl}>
-        <button onClick={onVolumeDown} style={styles.volBtn} aria-label="Volume Down">
-          <Icon path={mdiVolumeMinus} size={0.8} color="#ffffff" />
+      <div style={styles.mediaRow(isCompact)}>
+        <button onClick={() => onSendCommand('play')} style={styles.navBtn(isCompact)} aria-label="Play">
+          <Icon path={mdiPlay} size={isCompact ? 0.65 : 0.8} color="#9ca3af" />
         </button>
-        <button onClick={onMute} style={styles.muteBtn} aria-label="Mute Volume">
-          <Icon path={mdiVolumeMute} size={0.8} color="#9ca3af" />
+        <button onClick={() => onSendCommand('pause')} style={styles.navBtn(isCompact)} aria-label="Pause">
+          <Icon path={mdiPause} size={isCompact ? 0.65 : 0.8} color="#9ca3af" />
         </button>
-        <button onClick={onVolumeUp} style={styles.volBtn} aria-label="Volume Up">
-          <Icon path={mdiVolumePlus} size={0.8} color="#ffffff" />
+      </div>
+
+      <div style={styles.volumeControl(isCompact)}>
+        <button onClick={onVolumeDown} style={styles.volBtn(isCompact)} aria-label="Volume Down">
+          <Icon path={mdiVolumeMinus} size={isCompact ? 0.65 : 0.8} color="#ffffff" />
+        </button>
+        <button onClick={onMute} style={styles.muteBtn(isCompact)} aria-label="Mute Volume">
+          <Icon path={mdiVolumeMute} size={isCompact ? 0.65 : 0.8} color="#9ca3af" />
+        </button>
+        <button onClick={onVolumeUp} style={styles.volBtn(isCompact)} aria-label="Volume Up">
+          <Icon path={mdiVolumePlus} size={isCompact ? 0.65 : 0.8} color="#ffffff" />
         </button>
       </div>
     </div>
@@ -99,22 +113,22 @@ export const TvRemoteCard: React.FC<TvRemoteCardProps> = ({
 };
 
 const styles = {
-  card: {
+  card: (isCompact: boolean) => ({
     display: 'flex',
     flexDirection: 'column' as const,
     height: '100%',
-    padding: '16px',
+    padding: isCompact ? '10px' : '16px',
     boxSizing: 'border-box' as const,
     justifyContent: 'space-between',
     background: 'linear-gradient(135deg, rgba(17, 24, 39, 0.75) 0%, rgba(10, 15, 30, 0.75) 100%)',
     userSelect: 'none' as const,
-  },
+  }),
   header: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
-    marginBottom: '8px',
+    marginBottom: '4px',
   },
   name: {
     margin: 0,
@@ -136,35 +150,38 @@ const styles = {
     border: '1px solid rgba(239, 68, 68, 0.2)',
     cursor: 'pointer',
     outline: 'none',
+    flexShrink: 0,
   },
-  dpadContainer: {
+  dpadContainer: (isCompact: boolean) => ({
     display: 'grid',
     gridTemplateColumns: 'repeat(3, 1fr)',
     gridTemplateRows: 'repeat(3, 1fr)',
-    gap: '4px',
-    width: '136px',
-    height: '136px',
-    margin: '12px auto',
+    gap: isCompact ? '2px' : '4px',
+    width: isCompact ? '100px' : '136px',
+    height: isCompact ? '100px' : '136px',
+    margin: isCompact ? '4px auto' : '12px auto',
     alignItems: 'center',
     justifyItems: 'center',
-  },
+  }),
   dpadSpacer: {
     width: '100%',
     height: '100%',
   },
-  dpadBtn: (direction: string) => {
+  dpadBtn: (direction: string, isCompact: boolean) => {
     let borderRadius = '8px';
     if (direction === 'up') borderRadius = '24px 24px 8px 8px';
     else if (direction === 'down') borderRadius = '8px 8px 24px 24px';
     else if (direction === 'left') borderRadius = '24px 8px 8px 24px';
     else if (direction === 'right') borderRadius = '8px 24px 24px 8px';
 
+    const btnSize = isCompact ? '30px' : '40px';
+
     return {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      width: '40px',
-      height: '40px',
+      width: btnSize,
+      height: btnSize,
       borderRadius,
       backgroundColor: '#1f2937',
       border: '1px solid #374151',
@@ -176,85 +193,97 @@ const styles = {
       },
     };
   },
-  dpadSelect: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '40px',
-    height: '40px',
-    borderRadius: '50%',
-    backgroundColor: '#3b82f6',
-    border: 'none',
-    color: '#ffffff',
-    fontSize: '11px',
-    fontWeight: 700,
-    cursor: 'pointer',
-    outline: 'none',
-    boxShadow: '0 0 10px rgba(59, 130, 246, 0.3)',
-    ':active': {
-      backgroundColor: '#2563eb',
-    },
+  dpadSelect: (isCompact: boolean) => {
+    const btnSize = isCompact ? '30px' : '40px';
+    return {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: btnSize,
+      height: btnSize,
+      borderRadius: '50%',
+      backgroundColor: '#3b82f6',
+      border: 'none',
+      color: '#ffffff',
+      fontSize: isCompact ? '9px' : '11px',
+      fontWeight: 700,
+      cursor: 'pointer',
+      outline: 'none',
+      boxShadow: '0 0 10px rgba(59, 130, 246, 0.3)',
+      ':active': {
+        backgroundColor: '#2563eb',
+      },
+    };
   },
-  navRow: {
+  navRow: (isCompact: boolean) => ({
     display: 'flex',
     justifyContent: 'center',
-    gap: '24px',
+    gap: isCompact ? '12px' : '24px',
     width: '100%',
-    margin: '6px 0',
-  },
-  mediaRow: {
+    margin: isCompact ? '2px 0' : '6px 0',
+  }),
+  mediaRow: (isCompact: boolean) => ({
     display: 'flex',
     justifyContent: 'center',
-    gap: '24px',
+    gap: isCompact ? '12px' : '24px',
     width: '100%',
-    margin: '6px 0',
+    margin: isCompact ? '2px 0' : '6px 0',
+  }),
+  navBtn: (isCompact: boolean) => {
+    const btnSize = isCompact ? '26px' : '32px';
+    return {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: btnSize,
+      height: btnSize,
+      borderRadius: '50%',
+      backgroundColor: 'rgba(255, 255, 255, 0.05)',
+      border: 'none',
+      cursor: 'pointer',
+      outline: 'none',
+      transition: 'background-color 0.1s',
+    };
   },
-  navBtn: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '32px',
-    height: '32px',
-    borderRadius: '50%',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    border: 'none',
-    cursor: 'pointer',
-    outline: 'none',
-    transition: 'background-color 0.1s',
-  },
-  volumeControl: {
+  volumeControl: (isCompact: boolean) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
-    marginTop: '12px',
+    marginTop: isCompact ? '4px' : '12px',
     backgroundColor: 'rgba(0, 0, 0, 0.15)',
     borderRadius: '12px',
     padding: '4px',
     border: '1px solid rgba(255, 255, 255, 0.02)',
+  }),
+  volBtn: (isCompact: boolean) => {
+    const btnSize = isCompact ? '26px' : '32px';
+    return {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: btnSize,
+      height: btnSize,
+      borderRadius: '8px',
+      backgroundColor: '#1f2937',
+      border: 'none',
+      cursor: 'pointer',
+      outline: 'none',
+    };
   },
-  volBtn: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '32px',
-    height: '32px',
-    borderRadius: '8px',
-    backgroundColor: '#1f2937',
-    border: 'none',
-    cursor: 'pointer',
-    outline: 'none',
-  },
-  muteBtn: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '32px',
-    height: '32px',
-    borderRadius: '8px',
-    backgroundColor: 'transparent',
-    border: 'none',
-    cursor: 'pointer',
-    outline: 'none',
+  muteBtn: (isCompact: boolean) => {
+    const btnSize = isCompact ? '26px' : '32px';
+    return {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: btnSize,
+      height: btnSize,
+      borderRadius: '8px',
+      backgroundColor: 'transparent',
+      border: 'none',
+      cursor: 'pointer',
+      outline: 'none',
+    };
   },
 };

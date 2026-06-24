@@ -59,6 +59,7 @@ export const UpsStatusCard: React.FC<UpsStatusCardProps> = ({
   }, []);
 
   const isCompact = cardHeight < 190;
+  const isVeryCompact = cardHeight < 110;
 
   const getStatusLabel = () => {
     if (isOnline) return 'ONLINE';
@@ -70,6 +71,31 @@ export const UpsStatusCard: React.FC<UpsStatusCardProps> = ({
     if (isOnline) return '#10b981'; // Green
     return '#f59e0b'; // Amber (warning)
   };
+
+  if (isVeryCompact) {
+    return (
+      <div ref={containerRef} style={styles.veryCompactCard}>
+        <div style={styles.compactLeft}>
+          <div style={styles.iconContainer(isOnline)}>
+            <Icon
+              path={isOnline ? mdiBatteryCharging : mdiBattery}
+              size={0.9}
+              color={getStatusColor()}
+            />
+          </div>
+          <div style={styles.titleInfo}>
+            <span style={styles.name}>{displayName}</span>
+            <span style={styles.statusText(getStatusColor())}>{getStatusLabel()}</span>
+          </div>
+        </div>
+        <div style={styles.compactRight}>
+          <span style={styles.compactMetric}>{battery}%</span>
+          <span style={styles.compactDivider}>|</span>
+          <span style={styles.compactMetric}>{runtimeStr}</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div ref={containerRef} style={styles.card(isCompact)}>
@@ -167,15 +193,20 @@ const styles = {
     height: '38px',
     borderRadius: '10px',
     backgroundColor: isOnline ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)',
+    flexShrink: 0,
   }),
   titleInfo: {
     display: 'flex',
     flexDirection: 'column' as const,
+    overflow: 'hidden',
   },
   name: {
     fontSize: '14px',
     fontWeight: 600,
     color: '#e5e7eb',
+    whiteSpace: 'nowrap' as const,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   },
   statusText: (color: string) => ({
     fontSize: '10px',
@@ -183,11 +214,15 @@ const styles = {
     color,
     letterSpacing: '0.5px',
     marginTop: '2px',
+    whiteSpace: 'nowrap' as const,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   }),
   alertIcon: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    flexShrink: 0,
   },
   metricsContainer: (isCompact: boolean) => ({
     display: 'flex',
@@ -270,5 +305,41 @@ const styles = {
     fontSize: '11px',
     color: '#e5e7eb',
     fontWeight: 600,
+  },
+  veryCompactCard: {
+    display: 'flex',
+    flexDirection: 'row' as const,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    height: '100%',
+    padding: '12px',
+    boxSizing: 'border-box' as const,
+    background: 'linear-gradient(135deg, rgba(17, 24, 39, 0.75) 0%, rgba(10, 15, 30, 0.75) 100%)',
+    borderRadius: '16px',
+    border: '1px solid rgba(255, 255, 255, 0.05)',
+    userSelect: 'none' as const,
+  },
+  compactLeft: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    overflow: 'hidden',
+    flex: 1,
+  },
+  compactRight: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    flexShrink: 0,
+    marginLeft: '8px',
+  },
+  compactMetric: {
+    fontSize: '13px',
+    fontWeight: 700,
+    color: '#f3f4f6',
+  },
+  compactDivider: {
+    fontSize: '11px',
+    color: '#4b5563',
   },
 };

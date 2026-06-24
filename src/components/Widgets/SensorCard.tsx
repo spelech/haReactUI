@@ -59,8 +59,69 @@ export const SensorCard: React.FC<SensorCardProps> = ({
   const defaultIcon = getIconForDeviceClass(deviceClass, state);
   const iconColor = getColorForDeviceClass(deviceClass, state);
 
+  // Format binary sensor state if applicable
+  const isBinarySensor = props.id.startsWith('binary_sensor.');
+  let displayState = state;
+  if (isBinarySensor) {
+    if (state === 'on') {
+      if (deviceClass === 'motion') displayState = 'Detected';
+      else if (deviceClass === 'door' || deviceClass === 'window' || deviceClass === 'opening') displayState = 'Open';
+      else if (deviceClass === 'smoke') displayState = 'Smoke';
+      else if (deviceClass === 'co' || deviceClass === 'gas') displayState = 'Gas';
+      else if (deviceClass === 'lock') displayState = 'Unlocked';
+      else if (deviceClass === 'moisture') displayState = 'Wet';
+      else if (deviceClass === 'battery') displayState = 'Low';
+      else if (deviceClass === 'problem') displayState = 'Problem';
+      else displayState = 'On';
+    } else if (state === 'off') {
+      if (deviceClass === 'motion') displayState = 'Clear';
+      else if (deviceClass === 'door' || deviceClass === 'window' || deviceClass === 'opening') displayState = 'Closed';
+      else if (deviceClass === 'smoke' || deviceClass === 'co' || deviceClass === 'gas') displayState = 'Clear';
+      else if (deviceClass === 'lock') displayState = 'Locked';
+      else if (deviceClass === 'moisture') displayState = 'Dry';
+      else if (deviceClass === 'battery') displayState = 'Normal';
+      else if (deviceClass === 'problem') displayState = 'OK';
+      else displayState = 'Off';
+    }
+  }
+
+  const cardRef = React.useRef<HTMLDivElement>(null);
+  const [isCompact, setIsCompact] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!cardRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setIsCompact(entry.contentRect.height < 110);
+      }
+    });
+    observer.observe(cardRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  if (isCompact) {
+    return (
+      <div ref={cardRef} style={styles.compactCard}>
+        <div style={styles.compactLeft}>
+          <div style={styles.iconContainer(iconColor)}>
+            <Icon
+              path={iconOverride || defaultIcon}
+              size={0.9}
+              color={iconColor}
+            />
+          </div>
+          <span style={styles.compactName}>{displayName}</span>
+        </div>
+        <div style={styles.compactRight}>
+          <span style={styles.compactValue(isBinarySensor, state === 'on')}>{displayState}</span>
+          {unit && <span style={styles.compactUnit}>{unit}</span>}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div style={styles.card}>
+    <div ref={cardRef} style={styles.card}>
       <div style={styles.header}>
         <div style={styles.iconContainer(iconColor)}>
           <Icon
@@ -74,7 +135,7 @@ export const SensorCard: React.FC<SensorCardProps> = ({
         </div>
       </div>
       <div style={styles.body}>
-        <span style={styles.value}>{state}</span>
+        <span style={styles.value}>{displayState}</span>
         {unit && <span style={styles.unit}>{unit}</span>}
       </div>
     </div>
@@ -108,6 +169,7 @@ const styles = {
     borderRadius: '10px',
     backgroundColor: `${color}1A`, // 10% opacity
     transition: 'background-color 0.2s',
+    flexShrink: 0,
   }),
   info: {
     flex: 1,
@@ -138,6 +200,50 @@ const styles = {
   },
   unit: {
     fontSize: '14px',
+    fontWeight: 500,
+    color: '#6b7280',
+  },
+  compactCard: {
+    display: 'flex',
+    flexDirection: 'row' as const,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    height: '100%',
+    padding: '12px',
+    boxSizing: 'border-box' as const,
+    background: 'linear-gradient(135deg, rgba(17, 24, 39, 0.75) 0%, rgba(10, 15, 30, 0.75) 100%)',
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    userSelect: 'none' as const,
+  },
+  compactLeft: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    overflow: 'hidden',
+    flex: 1,
+  },
+  compactName: {
+    fontSize: '13px',
+    fontWeight: 600,
+    color: '#9ca3af',
+    whiteSpace: 'nowrap' as const,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+  compactRight: {
+    display: 'flex',
+    alignItems: 'baseline',
+    gap: '2px',
+    marginLeft: '8px',
+    flexShrink: 0,
+  },
+  compactValue: (isBinary: boolean, isOn: boolean) => ({
+    fontSize: '15px',
+    fontWeight: 700,
+    color: isBinary ? (isOn ? '#ef4444' : '#10b981') : '#f3f4f6',
+  }),
+  compactUnit: {
+    fontSize: '11px',
     fontWeight: 500,
     color: '#6b7280',
   },

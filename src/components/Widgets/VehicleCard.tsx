@@ -45,6 +45,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
   }, []);
 
   const showActions = cardHeight > 190;
+  const isVeryCompact = cardHeight < 110;
 
   const handleLockToggle = async () => {
     if (isDemo || !lockEntity) return;
@@ -71,6 +72,31 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
       setLoadingAction(null);
     }
   };
+
+  if (isVeryCompact) {
+    return (
+      <div ref={containerRef} style={styles.veryCompactCard}>
+        <div style={styles.compactLeft}>
+          <div style={styles.iconContainer}>
+            <Icon path={mdiCar} size={0.9} color="#60a5fa" />
+          </div>
+          <div style={styles.titleInfo}>
+            <span style={styles.name}>{displayName}</span>
+            <span style={styles.compactSubtext}>{fuel}% Fuel | {range} mi</span>
+          </div>
+        </div>
+        <div style={styles.lockButtonContainer}>
+          <button
+            style={styles.compactLockBtn(isLocked)}
+            onClick={handleLockToggle}
+            disabled={loadingAction !== null}
+          >
+            <Icon path={isLocked ? mdiLock : mdiLockOpen} size={0.75} color={isLocked ? '#10b981' : '#f59e0b'} />
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div ref={containerRef} style={styles.card(cardHeight < 190)}>
@@ -176,23 +202,29 @@ const styles = {
     height: '38px',
     borderRadius: '10px',
     backgroundColor: 'rgba(96, 165, 250, 0.1)',
+    flexShrink: 0,
   },
   titleInfo: {
     display: 'flex',
     flexDirection: 'column' as const,
-    gap: '2px',
+    overflow: 'hidden',
   },
   name: {
     fontSize: '15px',
     fontWeight: 600,
     color: '#e5e7eb',
+    whiteSpace: 'nowrap' as const,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   },
   demoBadge: {
     fontSize: '10px',
     color: '#3b82f6',
     fontWeight: 600,
   },
-  lockButtonContainer: {},
+  lockButtonContainer: {
+    flexShrink: 0,
+  },
   lockBtn: (isLocked: boolean) => ({
     display: 'flex',
     alignItems: 'center',
@@ -305,5 +337,43 @@ const styles = {
     cursor: 'pointer',
     outline: 'none',
     transition: 'background-color 0.2s',
+  }),
+  veryCompactCard: {
+    display: 'flex',
+    flexDirection: 'row' as const,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    height: '100%',
+    padding: '12px',
+    boxSizing: 'border-box' as const,
+    background: 'linear-gradient(135deg, rgba(17, 24, 39, 0.75) 0%, rgba(10, 15, 30, 0.75) 100%)',
+    borderRadius: '16px',
+    border: '1px solid rgba(255, 255, 255, 0.05)',
+    userSelect: 'none' as const,
+  },
+  compactLeft: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    overflow: 'hidden',
+    flex: 1,
+  },
+  compactSubtext: {
+    fontSize: '11px',
+    color: '#9ca3af',
+    fontWeight: 500,
+    marginTop: '2px',
+  },
+  compactLockBtn: (isLocked: boolean) => ({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '32px',
+    height: '32px',
+    borderRadius: '8px',
+    backgroundColor: isLocked ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+    border: isLocked ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(245, 158, 11, 0.3)',
+    cursor: 'pointer',
+    outline: 'none',
   }),
 };

@@ -90,6 +90,23 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({ props, nameOverride })
   const currentIcon = getConditionIcon(state);
   const currentColor = getConditionColor(state);
 
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [cardHeight, setCardHeight] = React.useState<number>(300);
+
+  React.useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setCardHeight(entry.contentRect.height);
+      }
+    });
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const isCompact = cardHeight < 190;
+  const isVeryCompact = cardHeight < 110;
+
   const formatDay = (dateStr: string) => {
     try {
       const date = new Date(dateStr);
@@ -115,40 +132,42 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({ props, nameOverride })
   };
 
   return (
-    <div style={styles.card}>
-      <div style={styles.header}>
+    <div ref={containerRef} style={styles.card(isCompact, isVeryCompact)}>
+      <div style={styles.header(isVeryCompact)}>
         <div style={styles.info}>
           <h3 style={styles.name}>{displayName}</h3>
           <span style={styles.conditionText}>{state.toUpperCase()}</span>
         </div>
-        <div style={styles.tempSection}>
-          <Icon path={currentIcon} size={1.8} color={currentColor} />
-          <span style={styles.tempValue}>{Math.round(temperature)}°</span>
+        <div style={styles.tempSection(isVeryCompact)}>
+          <Icon path={currentIcon} size={isVeryCompact ? 1.3 : 1.8} color={currentColor} />
+          <span style={styles.tempValue(isVeryCompact)}>{Math.round(temperature)}°</span>
         </div>
       </div>
 
-      <div style={styles.statsRow}>
-        {humidity !== undefined && (
-          <div style={styles.stat}>
-            <Icon path={mdiWaterPercent} size={0.7} color="#60a5fa" />
-            <span>{humidity}% Hum</span>
-          </div>
-        )}
-        {windSpeed !== undefined && (
-          <div style={styles.stat}>
-            <Icon path={mdiWeatherWindy} size={0.7} color="#9ca3af" />
-            <span>{Math.round(windSpeed)} mph</span>
-          </div>
-        )}
-        {pressure !== undefined && (
-          <div style={styles.stat}>
-            <Icon path={mdiGauge} size={0.7} color="#34d399" />
-            <span>{Math.round(pressure)} hPa</span>
-          </div>
-        )}
-      </div>
+      {!isVeryCompact && (
+        <div style={styles.statsRow}>
+          {humidity !== undefined && (
+            <div style={styles.stat}>
+              <Icon path={mdiWaterPercent} size={0.7} color="#60a5fa" />
+              <span>{humidity}% Hum</span>
+            </div>
+          )}
+          {windSpeed !== undefined && (
+            <div style={styles.stat}>
+              <Icon path={mdiWeatherWindy} size={0.7} color="#9ca3af" />
+              <span>{Math.round(windSpeed)} mph</span>
+            </div>
+          )}
+          {pressure !== undefined && (
+            <div style={styles.stat}>
+              <Icon path={mdiGauge} size={0.7} color="#34d399" />
+              <span>{Math.round(pressure)} hPa</span>
+            </div>
+          )}
+        </div>
+      )}
 
-      {forecast && forecast.length > 0 && (
+      {!isCompact && forecast && forecast.length > 0 && (
         <div style={styles.forecastContainer}>
           {forecast.slice(0, 5).map((day, idx) => {
             const icon = getConditionIcon(day.condition);
@@ -173,33 +192,39 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({ props, nameOverride })
 };
 
 const styles = {
-  card: {
+  card: (_isCompact: boolean, isVeryCompact: boolean) => ({
     display: 'flex',
     flexDirection: 'column' as const,
     height: '100%',
-    padding: '12px',
+    padding: isVeryCompact ? '10px 14px' : '12px',
     boxSizing: 'border-box' as const,
     background: 'linear-gradient(135deg, rgba(17, 24, 39, 0.75) 0%, rgba(10, 15, 30, 0.75) 100%)',
     borderRadius: '16px',
     border: '1px solid rgba(255, 255, 255, 0.05)',
-    justifyContent: 'space-between',
+    justifyContent: isVeryCompact ? 'center' : 'space-between',
     userSelect: 'none' as const,
-  },
-  header: {
+  }),
+  header: (isVeryCompact: boolean) => ({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
-  },
+    gap: isVeryCompact ? '8px' : '0px',
+  }),
   info: {
     display: 'flex',
     flexDirection: 'column' as const,
+    overflow: 'hidden',
+    flex: 1,
   },
   name: {
     margin: 0,
-    fontSize: '15px',
+    fontSize: '14px',
     fontWeight: 600,
     color: '#9ca3af',
+    whiteSpace: 'nowrap' as const,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   },
   conditionText: {
     fontSize: '11px',
@@ -207,17 +232,21 @@ const styles = {
     color: '#6b7280',
     letterSpacing: '1px',
     marginTop: '2px',
+    whiteSpace: 'nowrap' as const,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   },
-  tempSection: {
+  tempSection: (isVeryCompact: boolean) => ({
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
-  },
-  tempValue: {
-    fontSize: '32px',
+    gap: isVeryCompact ? '4px' : '8px',
+    flexShrink: 0,
+  }),
+  tempValue: (isVeryCompact: boolean) => ({
+    fontSize: isVeryCompact ? '24px' : '32px',
     fontWeight: 700,
     color: '#ffffff',
-  },
+  }),
   statsRow: {
     display: 'flex',
     gap: '12px',

@@ -21,6 +21,20 @@ export const LightCard: React.FC<LightCardProps> = ({
   const { isOn, brightness, stateText, supportsBrightness } = props;
   const displayName = nameOverride || props.name;
 
+  const cardRef = React.useRef<HTMLDivElement>(null);
+  const [isCompact, setIsCompact] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!cardRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setIsCompact(entry.contentRect.height < 110);
+      }
+    });
+    observer.observe(cardRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (onChangeBrightness) {
       onChangeBrightness(parseInt(e.target.value, 10));
@@ -28,7 +42,7 @@ export const LightCard: React.FC<LightCardProps> = ({
   };
 
   return (
-    <div style={styles.card(isOn)}>
+    <div ref={cardRef} style={styles.card(isOn, isCompact)}>
       <div style={styles.header}>
         <div style={styles.iconContainer(isOn)} onClick={onToggle}>
           <Icon
@@ -46,7 +60,7 @@ export const LightCard: React.FC<LightCardProps> = ({
         </button>
       </div>
 
-      {isOn && supportsBrightness && onChangeBrightness && (
+      {!isCompact && isOn && supportsBrightness && onChangeBrightness && (
         <div style={styles.sliderContainer}>
           <input
             type="range"
@@ -63,13 +77,13 @@ export const LightCard: React.FC<LightCardProps> = ({
 };
 
 const styles = {
-  card: (isOn: boolean) => ({
+  card: (isOn: boolean, isCompact: boolean) => ({
     display: 'flex',
     flexDirection: 'column' as const,
     height: '100%',
-    padding: '16px',
+    padding: isCompact ? '12px' : '16px',
     boxSizing: 'border-box' as const,
-    justifyContent: 'space-between',
+    justifyContent: isCompact ? 'center' : 'space-between',
     background: isOn
       ? 'linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%)'
       : 'linear-gradient(135deg, rgba(17, 24, 39, 0.75) 0%, rgba(10, 15, 30, 0.75) 100%)',
@@ -95,6 +109,7 @@ const styles = {
     borderRadius: '12px',
     backgroundColor: isOn ? 'rgba(251, 191, 36, 0.15)' : 'rgba(255, 255, 255, 0.05)',
     transition: 'background-color 0.2s',
+    flexShrink: 0,
   }),
   info: {
     flex: 1,
@@ -127,6 +142,7 @@ const styles = {
     backgroundColor: isOn ? '#fbbf24' : 'rgba(255, 255, 255, 0.1)',
     color: isOn ? '#0f172a' : '#e5e7eb',
     transition: 'all 0.2s',
+    flexShrink: 0,
   }),
   sliderContainer: {
     marginTop: '12px',
