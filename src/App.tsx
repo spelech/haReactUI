@@ -16,6 +16,24 @@ import {
   mdiCar,
   mdiServer,
   mdiLan,
+  mdiSofa,
+  mdiBedKing,
+  mdiBaby,
+  mdiLaptop,
+  mdiBedOutline,
+  mdiSilverwareForkKnife,
+  mdiChefHat,
+  mdiTheater,
+  mdiTree,
+  mdiShower,
+  mdiWashingMachine,
+  mdiLightbulbOutline,
+  mdiRemote,
+  mdiPrinter3d,
+  mdiWeatherPartlyCloudy,
+  mdiChartLine,
+  mdiGrill,
+  mdiCrosshairsGps
 } from '@mdi/js';
 import {
   SmartLightCard,
@@ -38,16 +56,49 @@ import {
   SmartUpsStatusCard,
 } from './components/Widgets/SmartWidgets';
 
-// Subview navigation items
-const VIEW_ITEMS = [
-  { id: 'home', label: 'Home', icon: mdiHome },
-  { id: 'security', label: 'Security', icon: mdiShieldLock },
-  { id: 'climate', label: 'Climate', icon: mdiThermostat },
-  { id: 'media', label: 'Media', icon: mdiCast },
-  { id: 'cameras', label: 'Cameras', icon: mdiVideo },
-  { id: 'car', label: 'Car Status', icon: mdiCar },
-  { id: 'server', label: 'Server Monitor', icon: mdiServer },
-  { id: 'network', label: 'Network', icon: mdiLan },
+// Subview navigation categories
+const VIEW_CATEGORIES = [
+  {
+    title: 'Main',
+    items: [
+      { id: 'home', label: 'Home', icon: mdiHome },
+      { id: 'security', label: 'Security', icon: mdiShieldLock },
+      { id: 'hvac-controls', label: 'Heat/Cool', icon: mdiThermostat },
+      { id: 'cast-controls', label: 'Media Players', icon: mdiCast },
+      { id: 'cameras', label: 'Cameras', icon: mdiVideo },
+      { id: 'car', label: 'Car Status', icon: mdiCar },
+      { id: 'server', label: 'Server Monitor', icon: mdiServer },
+      { id: 'network', label: 'Network', icon: mdiLan },
+    ]
+  },
+  {
+    title: 'Rooms',
+    items: [
+      { id: 'familyroom', label: 'Family Room', icon: mdiSofa },
+      { id: 'livingroom', label: 'Living Room', icon: mdiSofa },
+      { id: 'kitchen', label: 'Kitchen', icon: mdiSilverwareForkKnife },
+      { id: 'masterbedroom', label: 'Master Bedroom', icon: mdiBedKing },
+      { id: 'nursery', label: 'Nursery', icon: mdiBaby },
+      { id: 'office', label: 'Office', icon: mdiLaptop },
+      { id: 'guest', label: 'Guest Room', icon: mdiBedOutline },
+      { id: 'basement', label: 'Basement', icon: mdiTheater },
+      { id: 'outdoor', label: 'Outdoor', icon: mdiTree },
+      { id: 'masterbathroom', label: 'Master Bath', icon: mdiShower },
+      { id: 'laundryroom', label: 'Laundry Room', icon: mdiWashingMachine },
+      { id: 'notinrooms', label: 'Others', icon: mdiLightbulbOutline },
+    ]
+  },
+  {
+    title: 'More',
+    items: [
+      { id: 'remote-menu', label: 'Remotes', icon: mdiRemote },
+      { id: '3dprinter', label: '3D Printer', icon: mdiPrinter3d },
+      { id: 'weather', label: 'Weather', icon: mdiWeatherPartlyCloudy },
+      { id: 'temp-monitor-view', label: 'Temp Sensors', icon: mdiChartLine },
+      { id: 'cooking', label: 'Cooking', icon: mdiGrill },
+      { id: 'map', label: 'Locations', icon: mdiCrosshairsGps },
+    ]
+  }
 ];
 
 const DashboardContent: React.FC = () => {
@@ -221,6 +272,58 @@ const DashboardContent: React.FC = () => {
             nameOverride={overrides?.name}
           />
         );
+      case 'navigate':
+        // Resolve target view display name
+        const targetViewLabel = VIEW_CATEGORIES.flatMap((c) => c.items).find((v) => v.id === overrides?.targetView)?.label || overrides?.name || 'Go';
+        // Map icon name string to icon path
+        let resolvedIcon = mdiHome;
+        if (overrides?.icon) {
+          const iconName = overrides.icon;
+          const iconMap: Record<string, string> = {
+            mdiHome, mdiShieldLock, mdiThermostat, mdiCast, mdiVideo, mdiCar, mdiServer, mdiLan,
+            mdiSofa, mdiBedKing, mdiBaby, mdiLaptop, mdiBedOutline, mdiChefHat, mdiTheater, mdiTree,
+            mdiShower, mdiWashingMachine, mdiLightbulbOutline, mdiRemote, mdiPrinter3d, mdiWeatherPartlyCloudy,
+            mdiChartLine, mdiGrill, mdiCrosshairsGps, mdiSilverwareForkKnife
+          };
+          if (iconMap[iconName]) {
+            resolvedIcon = iconMap[iconName];
+          }
+        }
+        return (
+          <button
+            onClick={() => setCurrentView(overrides?.targetView)}
+            style={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '10px',
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              borderRadius: '16px',
+              cursor: 'pointer',
+              padding: '16px',
+              boxSizing: 'border-box',
+              transition: 'all 0.2s ease',
+              outline: 'none',
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.background = 'linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%)';
+              e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.3)';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.background = 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%)';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+            }}
+          >
+            <Icon path={resolvedIcon} size={1.2} color="#60a5fa" />
+            <span style={{ fontSize: '13px', fontWeight: 600, color: '#f3f4f6', textAlign: 'center' }}>
+              {overrides?.name || targetViewLabel}
+            </span>
+          </button>
+        );
       default:
         return <div style={{ padding: '16px', color: '#9ca3af' }}>Unsupported widget</div>;
     }
@@ -234,20 +337,38 @@ const DashboardContent: React.FC = () => {
           <div style={styles.brandLogo} />
           <span style={styles.brandName}>Wiley Home</span>
         </div>
-        <nav style={styles.navigation}>
-          {VIEW_ITEMS.map((item) => {
-            const isActive = currentView === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => setCurrentView(item.id)}
-                style={styles.navItem(isActive)}
-              >
-                <Icon path={item.icon} size={0.8} color={isActive ? '#3b82f6' : '#9ca3af'} />
-                <span style={styles.navLabel(isActive)}>{item.label}</span>
-              </button>
-            );
-          })}
+        <nav style={{ ...styles.navigation, display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {VIEW_CATEGORIES.map((category) => (
+            <div key={category.title} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <div style={{
+                fontSize: '11px',
+                fontWeight: 700,
+                color: '#4b5563',
+                textTransform: 'uppercase',
+                letterSpacing: '0.8px',
+                paddingLeft: '16px',
+                marginBottom: '4px',
+                opacity: 0.8
+              }}>
+                {category.title}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                {category.items.map((item) => {
+                  const isActive = currentView === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => setCurrentView(item.id)}
+                      style={styles.navItem(isActive)}
+                    >
+                      <Icon path={item.icon} size={0.8} color={isActive ? '#3b82f6' : '#9ca3af'} />
+                      <span style={styles.navLabel(isActive)}>{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
       </aside>
 
@@ -266,7 +387,7 @@ const DashboardContent: React.FC = () => {
           <header style={styles.header}>
             <div style={styles.welcomeSection}>
               <h1 style={styles.welcomeTitle}>
-                {VIEW_ITEMS.find((v) => v.id === currentView)?.label || 'Wiley Home'}
+                {VIEW_CATEGORIES.flatMap((c) => c.items).find((v) => v.id === currentView)?.label || 'Wiley Home'}
               </h1>
               <p style={styles.welcomeSubtitle}>Smart Dashboard</p>
             </div>
@@ -339,6 +460,9 @@ const styles = {
     boxSizing: 'border-box' as const,
     backdropFilter: 'blur(16px)',
     zIndex: 10,
+    overflowY: 'auto' as const,
+    maxHeight: '100vh',
+    scrollbarWidth: 'none' as const,
     '@media (max-width: 768px)': {
       display: 'none',
     },
