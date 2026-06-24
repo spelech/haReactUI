@@ -31,6 +31,27 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
 
   return (
     <div style={styles.gridContainer(isEditing)}>
+      <style>{`
+        .react-resizable-handle {
+          z-index: 50 !important;
+          cursor: se-resize !important;
+        }
+        .react-resizable-handle::after {
+          content: "" !important;
+          position: absolute !important;
+          right: 8px !important;
+          bottom: 8px !important;
+          width: 8px !important;
+          height: 8px !important;
+          border-right: 2px solid #60a5fa !important;
+          border-bottom: 2px solid #60a5fa !important;
+          transition: border-color 0.2s ease !important;
+        }
+        .react-resizable-handle:hover::after {
+          border-right-color: #3b82f6 !important;
+          border-bottom-color: #3b82f6 !important;
+        }
+      `}</style>
       <ResponsiveGridLayout
         className="layout"
         layouts={layouts}
