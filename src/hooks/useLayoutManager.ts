@@ -17,9 +17,9 @@ export interface WidgetConfig {
 }
 
 const STORAGE_KEYS = {
-  LAYOUTS: 'ha-dashboard-layouts-v8',
-  WIDGETS: 'ha-dashboard-widgets-v8',
-  CURRENT_VIEW: 'ha-dashboard-current-view-v8',
+  LAYOUTS: 'ha-dashboard-layouts-v9',
+  WIDGETS: 'ha-dashboard-widgets-v9',
+  CURRENT_VIEW: 'ha-dashboard-current-view-v9',
 };
 
 // Default initial widgets for each view
@@ -616,12 +616,59 @@ const buildCompleteLayouts = (rawLayouts: { [viewId: string]: { lg: any[] } }): 
   const complete: ViewLayouts = {};
 
   Object.entries(rawLayouts).forEach(([viewId, viewLayout]) => {
+    // Programmatically double y and h coordinates to scale from 80px rows to 40px rows,
+    // and inject min/max dimensions dynamically based on widget type patterns.
+    const transformedLg = viewLayout.lg.map((item) => {
+      const h = (item.h || 1) * 2;
+      const y = (item.y || 0) * 2;
+
+      let minW = item.minW;
+      let minH = item.minH;
+      let maxW = item.maxW;
+      let maxH = item.maxH;
+
+      if (item.i.startsWith('nav-')) {
+        minW = 1;
+        minH = 1;
+        maxW = 4;
+        maxH = 4;
+      } else if (item.i.includes('weather')) {
+        minW = 6;
+        minH = 4;
+      } else if (
+        item.i.includes('thermostat') ||
+        item.i.includes('climate') ||
+        item.i.includes('remote') ||
+        item.i.includes('media')
+      ) {
+        minW = 4;
+        minH = 6;
+      } else if (item.i.includes('camera')) {
+        minW = 4;
+        minH = 4;
+      } else {
+        // Standard minimum bounds for switches, sensors, buttons
+        minW = 1;
+        minH = 1;
+      }
+
+      return {
+        ...item,
+        y,
+        h,
+        minW,
+        minH,
+        maxW,
+        maxH,
+      };
+    });
+
     complete[viewId] = {
-      lg: viewLayout.lg,
-      md: scaleLayoutForBreakpoint(viewLayout.lg, 8, 'md'),
-      sm: scaleLayoutForBreakpoint(viewLayout.lg, 6, 'sm'),
-      xs: scaleLayoutForBreakpoint(viewLayout.lg, 4, 'xs'),
-      xxs: scaleLayoutForBreakpoint(viewLayout.lg, 2, 'xxs'),
+      lg: transformedLg,
+      md: scaleLayoutForBreakpoint(transformedLg, 8, 'md'),
+      sm: scaleLayoutForBreakpoint(transformedLg, 6, 'sm'),
+      xs: scaleLayoutForBreakpoint(transformedLg, 4, 'xs'),
+      xxs: scaleLayoutForBreakpoint(transformedLg, 2, 'xxs'),
     };
   });
 

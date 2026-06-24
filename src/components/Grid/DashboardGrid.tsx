@@ -30,13 +30,13 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
   const cols = { lg: 12, md: 8, sm: 6, xs: 4, xxs: 2 };
 
   return (
-    <div style={styles.gridContainer}>
+    <div style={styles.gridContainer(isEditing)}>
       <ResponsiveGridLayout
         className="layout"
         layouts={layouts}
         breakpoints={breakpoints}
         cols={cols}
-        rowHeight={80}
+        rowHeight={40}
         margin={[16, 16]}
         isDraggable={isEditing}
         isResizable={isEditing}
@@ -90,10 +90,17 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
 };
 
 const styles = {
-  gridContainer: {
+  gridContainer: (isEditing: boolean) => ({
     width: '100%',
     minHeight: 'calc(100vh - 120px)',
-  },
+    position: 'relative' as const,
+    transition: 'background 0.3s ease',
+    ...(isEditing ? {
+      backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.08) 1.5px, transparent 1.5px)',
+      backgroundSize: 'calc((100% - 16px) / 12) 56px',
+      backgroundPosition: '16px 16px',
+    } : {}),
+  }),
   gridItem: (isEditing: boolean) => ({
     display: 'flex',
     flexDirection: 'column' as const,
