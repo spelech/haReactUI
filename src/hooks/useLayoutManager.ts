@@ -17,9 +17,9 @@ export interface WidgetConfig {
 }
 
 const STORAGE_KEYS = {
-  LAYOUTS: 'ha-dashboard-layouts-v6',
-  WIDGETS: 'ha-dashboard-widgets-v6',
-  CURRENT_VIEW: 'ha-dashboard-current-view-v6',
+  LAYOUTS: 'ha-dashboard-layouts-v8',
+  WIDGETS: 'ha-dashboard-widgets-v8',
+  CURRENT_VIEW: 'ha-dashboard-current-view-v8',
 };
 
 // Default initial widgets for each view
@@ -78,7 +78,7 @@ const DEFAULT_WIDGETS: WidgetConfig[] = [
   { id: 'lr-lights-front', type: 'light', entityId: 'light.living_room_front_row', view: 'livingroom', overrides: { name: 'Front Row Lights' } },
   { id: 'lr-lights-middle', type: 'light', entityId: 'light.living_room_middle_row', view: 'livingroom', overrides: { name: 'Middle Row Lights' } },
   { id: 'lr-lights-back', type: 'light', entityId: 'light.living_room_back_row', view: 'livingroom', overrides: { name: 'Back Row Lights' } },
-  { id: 'lr-lights-lamp', type: 'light', entityId: 'light.living_room_lamp', view: 'livingroom', overrides: { name: 'Lamp' } },
+  { id: 'lr-lights-lamp', type: 'light', entityId: 'light.living_room_lamp', view: 'livingroom', overrides: { name: 'Item Lamp' } },
   { id: 'lr-lights-accent', type: 'light', entityId: 'light.living_room_accent_lighting', view: 'livingroom', overrides: { name: 'All Accent Lights' } },
   { id: 'lr-lights-tv', type: 'light', entityId: 'light.living_room_tv_lights', view: 'livingroom', overrides: { name: 'TV Backlights' } },
   { id: 'lr-shades', type: 'cover', entityId: 'cover.bay_window_shades', view: 'livingroom', overrides: { name: 'Bay Window Shades' } },
@@ -211,8 +211,8 @@ const DEFAULT_WIDGETS: WidgetConfig[] = [
   { id: 'sec-alarm', type: 'alarm', entityId: 'alarm_control_panel.823scd_alarm', view: 'security', overrides: { name: 'Ring Alarm System' } },
   { id: 'sec-siren', type: 'switch', entityId: 'switch.823scd_siren', view: 'security', overrides: { name: 'Siren' } },
   { id: 'sec-cam-active', type: 'switch', entityId: 'input_boolean.security_cameras_active', view: 'security', overrides: { name: 'Security Cameras Active' } },
-  { id: 'sec-frig-det', type: 'switch', entityId: 'input_boolean.frigate_detection_active', view: 'security', overrides: { name: 'Frigate Detection Active' } },
-  { id: 'sec-frig-rec', type: 'switch', entityId: 'input_boolean.frigate_recordings_active', view: 'security', overrides: { name: 'Frigate Recordings Active' } },
+  { id: 'sec-frig-det', type: 'switch', entityId: 'input_boolean.frigate_detection_active', view: 'security', overrides: { name: 'Security Cameras Detection' } },
+  { id: 'sec-frig-rec', type: 'switch', entityId: 'input_boolean.frigate_recordings_active', view: 'security', overrides: { name: 'Security Cameras Recording' } },
   { id: 'sec-doorbell', type: 'camera', entityId: 'camera.front_doorbell', view: 'security', overrides: { name: 'Front Doorbell' } },
   { id: 'sec-doorbell-act', type: 'sensor', entityId: 'sensor.front_doorbell_last_activity', view: 'security', overrides: { name: 'Doorbell Last Activity' } },
   { id: 'sec-lock', type: 'cover', entityId: 'lock.front_door_lock', view: 'security', overrides: { name: 'Front Door Lock' } },
@@ -274,307 +274,361 @@ const DEFAULT_WIDGETS: WidgetConfig[] = [
   { id: 'car-vehicle', type: 'car', entityId: 'sensor.fuel_level_es300h', view: 'car', overrides: { name: 'ES300h Hybrid' } },
 ];
 
-const DEFAULT_LAYOUTS: ViewLayouts = {
+const DEFAULT_LAYOUTS_RAW: { [viewId: string]: { lg: any[] } } = {
   home: {
     lg: [
-      { i: 'h-weather', x: 0, y: 0, w: 2, h: 2, minW: 2, minH: 2 },
-      { i: 'h-thermostat', x: 2, y: 0, w: 2, h: 3, minW: 2, minH: 2 },
-      { i: 'h-car', x: 0, y: 2, w: 2, h: 2, minW: 2, minH: 2 },
-      { i: 'h-printer', x: 2, y: 3, w: 2, h: 2, minW: 2, minH: 2 },
-      // Rooms Navigation (2 columns side-by-side)
-      { i: 'nav-familyroom', x: 0, y: 5, w: 2, h: 1 },
-      { i: 'nav-livingroom', x: 2, y: 5, w: 2, h: 1 },
-      { i: 'nav-kitchen', x: 0, y: 6, w: 2, h: 1 },
-      { i: 'nav-masterbedroom', x: 2, y: 6, w: 2, h: 1 },
-      { i: 'nav-nursery', x: 0, y: 7, w: 2, h: 1 },
-      { i: 'nav-office', x: 2, y: 7, w: 2, h: 1 },
-      { i: 'nav-guest', x: 0, y: 8, w: 2, h: 1 },
-      { i: 'nav-basement', x: 2, y: 8, w: 2, h: 1 },
-      { i: 'nav-outdoor', x: 0, y: 9, w: 2, h: 1 },
-      { i: 'nav-masterbathroom', x: 2, y: 9, w: 2, h: 1 },
-      { i: 'nav-laundryroom', x: 0, y: 10, w: 2, h: 1 },
-      { i: 'nav-others', x: 2, y: 10, w: 2, h: 1 },
-      // Controls/Monitoring Navigation
-      { i: 'nav-remote-menu', x: 0, y: 11, w: 2, h: 1 },
-      { i: 'nav-hvac-controls', x: 2, y: 11, w: 2, h: 1 },
-      { i: 'nav-3dprinter', x: 0, y: 12, w: 2, h: 1 },
-      { i: 'nav-security', x: 2, y: 12, w: 2, h: 1 },
-      { i: 'nav-cast-controls', x: 0, y: 13, w: 2, h: 1 },
-      { i: 'nav-cameras', x: 2, y: 13, w: 2, h: 1 },
-      { i: 'nav-weather', x: 0, y: 14, w: 2, h: 1 },
-      { i: 'nav-temp-monitor', x: 2, y: 14, w: 2, h: 1 },
-      { i: 'nav-network', x: 0, y: 15, w: 2, h: 1 },
-      { i: 'nav-server', x: 2, y: 15, w: 2, h: 1 },
-      { i: 'nav-cooking', x: 0, y: 16, w: 2, h: 1 },
-      { i: 'nav-map', x: 2, y: 16, w: 2, h: 1 },
+      { i: 'h-weather', x: 0, y: 0, w: 6, h: 3, minW: 2, minH: 2 },
+      { i: 'h-thermostat', x: 6, y: 0, w: 6, h: 4, minW: 2, minH: 2 },
+      { i: 'h-car', x: 0, y: 3, w: 6, h: 4, minW: 2, minH: 2 },
+      { i: 'h-printer', x: 6, y: 4, w: 6, h: 4, minW: 2, minH: 2 },
+      // Rooms Navigation (Row 1)
+      { i: 'nav-familyroom', x: 0, y: 8, w: 2, h: 1 },
+      { i: 'nav-livingroom', x: 2, y: 8, w: 2, h: 1 },
+      { i: 'nav-kitchen', x: 4, y: 8, w: 2, h: 1 },
+      { i: 'nav-masterbedroom', x: 6, y: 8, w: 2, h: 1 },
+      { i: 'nav-nursery', x: 8, y: 8, w: 2, h: 1 },
+      { i: 'nav-office', x: 10, y: 8, w: 2, h: 1 },
+      // Rooms Navigation (Row 2)
+      { i: 'nav-guest', x: 0, y: 9, w: 2, h: 1 },
+      { i: 'nav-basement', x: 2, y: 9, w: 2, h: 1 },
+      { i: 'nav-outdoor', x: 4, y: 9, w: 2, h: 1 },
+      { i: 'nav-masterbathroom', x: 6, y: 9, w: 2, h: 1 },
+      { i: 'nav-laundryroom', x: 8, y: 9, w: 2, h: 1 },
+      { i: 'nav-others', x: 10, y: 9, w: 2, h: 1 },
+      // Controls Navigation (Row 1)
+      { i: 'nav-remote-menu', x: 0, y: 10, w: 2, h: 1 },
+      { i: 'nav-hvac-controls', x: 2, y: 10, w: 2, h: 1 },
+      { i: 'nav-3dprinter', x: 4, y: 10, w: 2, h: 1 },
+      { i: 'nav-security', x: 6, y: 10, w: 2, h: 1 },
+      { i: 'nav-cast-controls', x: 8, y: 10, w: 2, h: 1 },
+      { i: 'nav-cameras', x: 10, y: 10, w: 2, h: 1 },
+      // Controls Navigation (Row 2)
+      { i: 'nav-weather', x: 0, y: 11, w: 2, h: 1 },
+      { i: 'nav-temp-monitor', x: 2, y: 11, w: 2, h: 1 },
+      { i: 'nav-network', x: 4, y: 11, w: 2, h: 1 },
+      { i: 'nav-server', x: 6, y: 11, w: 2, h: 1 },
+      { i: 'nav-cooking', x: 8, y: 11, w: 2, h: 1 },
+      { i: 'nav-map', x: 10, y: 11, w: 2, h: 1 },
     ],
   },
   familyroom: {
     lg: [
-      { i: 'fr-temp', x: 0, y: 0, w: 2, h: 2 },
-      { i: 'fr-motion', x: 2, y: 0, w: 2, h: 2 },
-      { i: 'fr-battery', x: 0, y: 2, w: 2, h: 2 },
-      { i: 'fr-lights-all', x: 2, y: 2, w: 2, h: 2 },
-      { i: 'fr-lights-couch', x: 0, y: 4, w: 2, h: 2 },
-      { i: 'fr-lights-fireplace', x: 2, y: 4, w: 2, h: 2 },
-      { i: 'fr-lights-accent', x: 0, y: 6, w: 2, h: 2 },
-      { i: 'fr-lights-lamps', x: 2, y: 6, w: 2, h: 2 },
-      { i: 'fr-lights-tv', x: 0, y: 8, w: 2, h: 2 },
-      { i: 'fr-shades', x: 2, y: 8, w: 2, h: 2 },
-      { i: 'fr-remote-roku', x: 0, y: 10, w: 2, h: 4 },
-      { i: 'fr-remote-shield', x: 2, y: 10, w: 2, h: 4 },
+      { i: 'fr-temp', x: 0, y: 0, w: 4, h: 1 },
+      { i: 'fr-motion', x: 4, y: 0, w: 4, h: 1 },
+      { i: 'fr-battery', x: 8, y: 0, w: 4, h: 1 },
+      { i: 'fr-lights-all', x: 0, y: 1, w: 4, h: 1 },
+      { i: 'fr-lights-couch', x: 4, y: 1, w: 4, h: 1 },
+      { i: 'fr-lights-fireplace', x: 8, y: 1, w: 4, h: 1 },
+      { i: 'fr-lights-accent', x: 0, y: 2, w: 4, h: 1 },
+      { i: 'fr-lights-lamps', x: 4, y: 2, w: 4, h: 1 },
+      { i: 'fr-lights-tv', x: 8, y: 2, w: 4, h: 1 },
+      { i: 'fr-shades', x: 0, y: 3, w: 12, h: 2 },
+      { i: 'fr-remote-roku', x: 0, y: 5, w: 6, h: 5 },
+      { i: 'fr-remote-shield', x: 6, y: 5, w: 6, h: 5 },
     ],
   },
   livingroom: {
     lg: [
-      { i: 'lr-temp', x: 0, y: 0, w: 2, h: 2 },
-      { i: 'lr-motion', x: 2, y: 0, w: 2, h: 2 },
-      { i: 'lr-lights-front', x: 0, y: 2, w: 2, h: 2 },
-      { i: 'lr-lights-middle', x: 2, y: 2, w: 2, h: 2 },
-      { i: 'lr-lights-back', x: 0, y: 4, w: 2, h: 2 },
-      { i: 'lr-lights-lamp', x: 2, y: 4, w: 2, h: 2 },
-      { i: 'lr-lights-accent', x: 0, y: 6, w: 2, h: 2 },
-      { i: 'lr-lights-tv', x: 2, y: 6, w: 2, h: 2 },
-      { i: 'lr-shades', x: 0, y: 8, w: 2, h: 2 },
-      { i: 'lr-remote-lg', x: 2, y: 8, w: 2, h: 4 },
+      { i: 'lr-temp', x: 0, y: 0, w: 6, h: 1 },
+      { i: 'lr-motion', x: 6, y: 0, w: 6, h: 1 },
+      { i: 'lr-lights-front', x: 0, y: 1, w: 4, h: 1 },
+      { i: 'lr-lights-middle', x: 4, y: 1, w: 4, h: 1 },
+      { i: 'lr-lights-back', x: 8, y: 1, w: 4, h: 1 },
+      { i: 'lr-lights-lamp', x: 0, y: 2, w: 4, h: 1 },
+      { i: 'lr-lights-accent', x: 4, y: 2, w: 4, h: 1 },
+      { i: 'lr-lights-tv', x: 8, y: 2, w: 4, h: 1 },
+      { i: 'lr-shades', x: 0, y: 3, w: 12, h: 2 },
+      { i: 'lr-remote-lg', x: 0, y: 5, w: 12, h: 5 },
     ],
   },
   kitchen: {
     lg: [
-      { i: 'kt-smoke', x: 0, y: 0, w: 2, h: 2 },
-      { i: 'kt-smoke-battery', x: 2, y: 0, w: 2, h: 2 },
-      { i: 'kt-lights-all', x: 0, y: 2, w: 2, h: 2 },
-      { i: 'kt-lights-fan', x: 2, y: 2, w: 2, h: 2 },
-      { i: 'kt-lights-ceiling', x: 0, y: 4, w: 2, h: 2 },
-      { i: 'kt-lights-island', x: 2, y: 4, w: 2, h: 2 },
-      { i: 'kt-lights-cabinet', x: 0, y: 6, w: 2, h: 2 },
-      { i: 'kt-fan', x: 2, y: 6, w: 2, h: 2 },
+      { i: 'kt-smoke', x: 0, y: 0, w: 6, h: 1 },
+      { i: 'kt-smoke-battery', x: 6, y: 0, w: 6, h: 1 },
+      { i: 'kt-lights-all', x: 0, y: 1, w: 4, h: 1 },
+      { i: 'kt-lights-fan', x: 4, y: 1, w: 4, h: 1 },
+      { i: 'kt-lights-ceiling', x: 8, y: 1, w: 4, h: 1 },
+      { i: 'kt-lights-island', x: 0, y: 2, w: 4, h: 2 },
+      { i: 'kt-lights-cabinet', x: 4, y: 2, w: 4, h: 2 },
+      { i: 'kt-fan', x: 8, y: 2, w: 4, h: 1 },
     ],
   },
   masterbedroom: {
     lg: [
-      { i: 'mb-temp', x: 0, y: 0, w: 2, h: 2 },
-      { i: 'mb-motion', x: 2, y: 0, w: 2, h: 2 },
-      { i: 'mb-smoke', x: 0, y: 2, w: 2, h: 2 },
-      { i: 'mb-battery', x: 2, y: 2, w: 2, h: 2 },
-      { i: 'mb-smoke-battery', x: 0, y: 4, w: 2, h: 2 },
-      { i: 'mb-lights-all', x: 2, y: 4, w: 2, h: 2 },
-      { i: 'mb-lights-fan', x: 0, y: 6, w: 2, h: 2 },
-      { i: 'mb-lights-nightstands', x: 2, y: 6, w: 2, h: 2 },
-      { i: 'mb-lights-steve', x: 0, y: 8, w: 2, h: 2 },
-      { i: 'mb-lights-laura', x: 2, y: 8, w: 2, h: 2 },
-      { i: 'mb-shades-vanity', x: 0, y: 10, w: 2, h: 2 },
-      { i: 'mb-shades-bedside', x: 2, y: 10, w: 2, h: 2 },
-      { i: 'mb-fan', x: 0, y: 12, w: 2, h: 2 },
-      { i: 'mb-remote-roku', x: 2, y: 12, w: 2, h: 4 },
+      { i: 'mb-temp', x: 0, y: 0, w: 4, h: 1 },
+      { i: 'mb-motion', x: 4, y: 0, w: 4, h: 1 },
+      { i: 'mb-smoke', x: 8, y: 0, w: 4, h: 1 },
+      { i: 'mb-battery', x: 0, y: 1, w: 6, h: 1 },
+      { i: 'mb-smoke-battery', x: 6, y: 1, w: 6, h: 1 },
+      { i: 'mb-lights-all', x: 0, y: 2, w: 4, h: 1 },
+      { i: 'mb-lights-fan', x: 4, y: 2, w: 4, h: 1 },
+      { i: 'mb-lights-nightstands', x: 8, y: 2, w: 4, h: 1 },
+      { i: 'mb-lights-steve', x: 0, y: 3, w: 6, h: 1 },
+      { i: 'mb-lights-laura', x: 6, y: 3, w: 6, h: 1 },
+      { i: 'mb-shades-vanity', x: 0, y: 4, w: 6, h: 2 },
+      { i: 'mb-shades-bedside', x: 6, y: 4, w: 6, h: 2 },
+      { i: 'mb-fan', x: 0, y: 6, w: 6, h: 1 },
+      { i: 'mb-remote-roku', x: 6, y: 6, w: 6, h: 5 },
     ],
   },
   nursery: {
     lg: [
-      { i: 'ns-temp', x: 0, y: 0, w: 2, h: 2 },
-      { i: 'ns-motion', x: 2, y: 0, w: 2, h: 2 },
-      { i: 'ns-smoke', x: 0, y: 2, w: 2, h: 2 },
-      { i: 'ns-battery', x: 2, y: 2, w: 2, h: 2 },
-      { i: 'ns-smoke-battery', x: 0, y: 4, w: 2, h: 2 },
-      { i: 'ns-camera', x: 2, y: 4, w: 2, h: 2 },
-      { i: 'ns-lights-all', x: 0, y: 6, w: 2, h: 2 },
-      { i: 'ns-lights-fan', x: 2, y: 6, w: 2, h: 2 },
-      { i: 'ns-lights-night', x: 0, y: 8, w: 2, h: 2 },
-      { i: 'ns-lights-rocker', x: 2, y: 8, w: 2, h: 2 },
-      { i: 'ns-shades', x: 0, y: 10, w: 2, h: 2 },
-      { i: 'ns-fan', x: 2, y: 10, w: 2, h: 2 },
+      { i: 'ns-temp', x: 0, y: 0, w: 4, h: 1 },
+      { i: 'ns-motion', x: 4, y: 0, w: 4, h: 1 },
+      { i: 'ns-smoke', x: 8, y: 0, w: 4, h: 1 },
+      { i: 'ns-battery', x: 0, y: 1, w: 6, h: 1 },
+      { i: 'ns-smoke-battery', x: 6, y: 1, w: 6, h: 1 },
+      { i: 'ns-camera', x: 0, y: 2, w: 12, h: 5 },
+      { i: 'ns-lights-all', x: 0, y: 7, w: 3, h: 1 },
+      { i: 'ns-lights-fan', x: 3, y: 7, w: 3, h: 1 },
+      { i: 'ns-lights-night', x: 6, y: 7, w: 3, h: 1 },
+      { i: 'ns-lights-rocker', x: 9, y: 7, w: 3, h: 1 },
+      { i: 'ns-shades', x: 0, y: 8, w: 6, h: 2 },
+      { i: 'ns-fan', x: 6, y: 8, w: 6, h: 1 },
     ],
   },
   office: {
     lg: [
-      { i: 'of-temp', x: 0, y: 0, w: 2, h: 2 },
-      { i: 'of-motion', x: 2, y: 0, w: 2, h: 2 },
-      { i: 'of-smoke', x: 0, y: 2, w: 2, h: 2 },
-      { i: 'of-battery', x: 2, y: 2, w: 2, h: 2 },
-      { i: 'of-smoke-battery', x: 0, y: 4, w: 2, h: 2 },
-      { i: 'of-lights-all', x: 2, y: 4, w: 2, h: 2 },
-      { i: 'of-lights-fan', x: 0, y: 6, w: 2, h: 2 },
-      { i: 'of-lights-floor', x: 2, y: 6, w: 2, h: 2 },
-      { i: 'of-lights-torch', x: 0, y: 8, w: 2, h: 2 },
-      { i: 'of-fan', x: 2, y: 8, w: 2, h: 2 },
+      { i: 'of-temp', x: 0, y: 0, w: 4, h: 1 },
+      { i: 'of-motion', x: 4, y: 0, w: 4, h: 1 },
+      { i: 'of-smoke', x: 8, y: 0, w: 4, h: 1 },
+      { i: 'of-battery', x: 0, y: 1, w: 6, h: 1 },
+      { i: 'of-smoke-battery', x: 6, y: 1, w: 6, h: 1 },
+      { i: 'of-lights-all', x: 0, y: 2, w: 3, h: 1 },
+      { i: 'of-lights-fan', x: 3, y: 2, w: 3, h: 1 },
+      { i: 'of-lights-floor', x: 6, y: 2, w: 3, h: 1 },
+      { i: 'of-lights-torch', x: 9, y: 2, w: 3, h: 1 },
+      { i: 'of-fan', x: 0, y: 3, w: 12, h: 1 },
     ],
   },
   guest: {
     lg: [
-      { i: 'gs-temp', x: 0, y: 0, w: 2, h: 2 },
-      { i: 'gs-motion', x: 2, y: 0, w: 2, h: 2 },
-      { i: 'gs-smoke', x: 0, y: 2, w: 2, h: 2 },
-      { i: 'gs-battery', x: 2, y: 2, w: 2, h: 2 },
-      { i: 'gs-smoke-battery', x: 0, y: 4, w: 2, h: 2 },
-      { i: 'gs-lights-fan', x: 2, y: 4, w: 2, h: 2 },
-      { i: 'gs-fan', x: 0, y: 6, w: 2, h: 2 },
+      { i: 'gs-temp', x: 0, y: 0, w: 4, h: 1 },
+      { i: 'gs-motion', x: 4, y: 0, w: 4, h: 1 },
+      { i: 'gs-smoke', x: 8, y: 0, w: 4, h: 1 },
+      { i: 'gs-battery', x: 0, y: 1, w: 6, h: 1 },
+      { i: 'gs-smoke-battery', x: 6, y: 1, w: 6, h: 1 },
+      { i: 'gs-lights-fan', x: 0, y: 2, w: 6, h: 1 },
+      { i: 'gs-fan', x: 6, y: 2, w: 6, h: 1 },
     ],
   },
   basement: {
     lg: [
-      { i: 'bs-temp', x: 0, y: 0, w: 2, h: 2 },
-      { i: 'bs-motion', x: 2, y: 0, w: 2, h: 2 },
-      { i: 'bs-smoke', x: 0, y: 2, w: 2, h: 2 },
-      { i: 'bs-battery', x: 2, y: 2, w: 2, h: 2 },
-      { i: 'bs-smoke-battery', x: 0, y: 4, w: 2, h: 2 },
-      { i: 'bs-lights-overhead', x: 2, y: 4, w: 2, h: 2 },
-      { i: 'bs-lights-perimeter', x: 0, y: 6, w: 2, h: 2 },
-      { i: 'bs-lights-couch', x: 2, y: 6, w: 2, h: 2 },
-      { i: 'bs-lights-billiard', x: 0, y: 8, w: 2, h: 2 },
-      { i: 'bs-lights-lamp', x: 2, y: 8, w: 2, h: 2 },
-      { i: 'bs-lights-bar', x: 0, y: 10, w: 2, h: 2 },
-      { i: 'bs-lights-stair', x: 2, y: 10, w: 2, h: 2 },
-      { i: 'bs-lights-dino', x: 0, y: 12, w: 2, h: 2 },
-      { i: 'bs-lights-soft', x: 2, y: 12, w: 2, h: 2 },
-      { i: 'bs-theater-tv', x: 0, y: 14, w: 2, h: 2 },
-      { i: 'bs-theater-wall', x: 2, y: 14, w: 2, h: 2 },
-      { i: 'bs-remote-shield', x: 0, y: 16, w: 2, h: 4 },
-      { i: 'bs-remote-lg', x: 2, y: 16, w: 2, h: 4 },
+      { i: 'bs-temp', x: 0, y: 0, w: 4, h: 1 },
+      { i: 'bs-motion', x: 4, y: 0, w: 4, h: 1 },
+      { i: 'bs-smoke', x: 8, y: 0, w: 4, h: 1 },
+      { i: 'bs-battery', x: 0, y: 1, w: 6, h: 1 },
+      { i: 'bs-smoke-battery', x: 6, y: 1, w: 6, h: 1 },
+      { i: 'bs-lights-overhead', x: 0, y: 2, w: 4, h: 1 },
+      { i: 'bs-lights-perimeter', x: 4, y: 2, w: 4, h: 1 },
+      { i: 'bs-lights-couch', x: 8, y: 2, w: 4, h: 1 },
+      { i: 'bs-lights-billiard', x: 0, y: 3, w: 4, h: 1 },
+      { i: 'bs-lights-lamp', x: 4, y: 3, w: 4, h: 1 },
+      { i: 'bs-lights-bar', x: 8, y: 3, w: 4, h: 1 },
+      { i: 'bs-lights-stair', x: 0, y: 4, w: 4, h: 1 },
+      { i: 'bs-lights-dino', x: 4, y: 4, w: 4, h: 1 },
+      { i: 'bs-lights-soft', x: 8, y: 4, w: 4, h: 1 },
+      { i: 'bs-theater-tv', x: 0, y: 5, w: 6, h: 1 },
+      { i: 'bs-theater-wall', x: 6, y: 5, w: 6, h: 1 },
+      { i: 'bs-remote-shield', x: 0, y: 6, w: 6, h: 5 },
+      { i: 'bs-remote-lg', x: 6, y: 6, w: 6, h: 5 },
     ],
   },
   outdoor: {
     lg: [
-      { i: 'out-driveway-motion', x: 0, y: 0, w: 2, h: 2 },
-      { i: 'out-front-motion', x: 2, y: 0, w: 2, h: 2 },
-      { i: 'out-lights-front', x: 0, y: 2, w: 2, h: 2 },
-      { i: 'out-lights-garage', x: 2, y: 2, w: 2, h: 2 },
-      { i: 'out-garage-door', x: 0, y: 4, w: 2, h: 2 },
+      { i: 'out-driveway-motion', x: 0, y: 0, w: 6, h: 1 },
+      { i: 'out-front-motion', x: 6, y: 0, w: 6, h: 1 },
+      { i: 'out-lights-front', x: 0, y: 1, w: 6, h: 1 },
+      { i: 'out-lights-garage', x: 6, y: 1, w: 6, h: 1 },
+      { i: 'out-garage-door', x: 0, y: 2, w: 12, h: 2 },
     ],
   },
   masterbathroom: {
     lg: [
-      { i: 'mbt-temp', x: 0, y: 0, w: 2, h: 2 },
-      { i: 'mbt-humidity', x: 2, y: 0, w: 2, h: 2 },
-      { i: 'mbt-battery', x: 0, y: 2, w: 2, h: 2 },
-      { i: 'mbt-lights-shower', x: 2, y: 2, w: 2, h: 2 },
-      { i: 'mbt-lights-vanity', x: 0, y: 4, w: 2, h: 2 },
-      { i: 'mbt-switch-closet', x: 2, y: 4, w: 2, h: 2 },
-      { i: 'mbt-fan', x: 0, y: 6, w: 2, h: 2 },
+      { i: 'mbt-temp', x: 0, y: 0, w: 4, h: 1 },
+      { i: 'mbt-humidity', x: 4, y: 0, w: 4, h: 1 },
+      { i: 'mbt-battery', x: 8, y: 0, w: 4, h: 1 },
+      { i: 'mbt-lights-shower', x: 0, y: 1, w: 4, h: 1 },
+      { i: 'mbt-lights-vanity', x: 4, y: 1, w: 4, h: 1 },
+      { i: 'mbt-switch-closet', x: 8, y: 1, w: 4, h: 1 },
+      { i: 'mbt-fan', x: 0, y: 2, w: 12, h: 1 },
     ],
   },
   laundryroom: {
     lg: [
-      { i: 'lr-washer', x: 0, y: 0, w: 2, h: 2 },
-      { i: 'lr-dryer', x: 2, y: 0, w: 2, h: 2 },
-      { i: 'lr-lights-utility', x: 0, y: 2, w: 2, h: 2 },
+      { i: 'lr-washer', x: 0, y: 0, w: 6, h: 1 },
+      { i: 'lr-dryer', x: 6, y: 0, w: 6, h: 1 },
+      { i: 'lr-lights-utility', x: 0, y: 1, w: 12, h: 1 },
     ],
   },
   notinrooms: {
     lg: [
-      { i: 'oth-protect', x: 0, y: 0, w: 2, h: 2 },
+      { i: 'oth-protect', x: 0, y: 0, w: 12, h: 3 },
     ],
   },
   'remote-menu': {
     lg: [
-      { i: 'rem-fr-roku', x: 0, y: 0, w: 2, h: 4 },
-      { i: 'rem-mb-roku', x: 2, y: 0, w: 2, h: 4 },
-      { i: 'rem-fr-shield', x: 0, y: 4, w: 2, h: 4 },
-      { i: 'rem-bs-shield', x: 2, y: 4, w: 2, h: 4 },
-      { i: 'rem-lr-lg', x: 0, y: 8, w: 2, h: 4 },
-      { i: 'rem-bs-lg', x: 2, y: 8, w: 2, h: 4 },
+      { i: 'rem-fr-roku', x: 0, y: 0, w: 4, h: 5 },
+      { i: 'rem-mb-roku', x: 4, y: 0, w: 4, h: 5 },
+      { i: 'rem-fr-shield', x: 8, y: 0, w: 4, h: 5 },
+      { i: 'rem-bs-shield', x: 0, y: 5, w: 4, h: 5 },
+      { i: 'rem-lr-lg', x: 4, y: 5, w: 4, h: 5 },
+      { i: 'rem-bs-lg', x: 8, y: 5, w: 4, h: 5 },
     ],
   },
   'hvac-controls': {
     lg: [
-      { i: 'hvac-thermostat', x: 0, y: 0, w: 2, h: 3 },
-      { i: 'hvac-nursery-humidifier', x: 2, y: 0, w: 2, h: 3 },
-      { i: 'hvac-basement-purifier', x: 0, y: 3, w: 2, h: 2 },
-      { i: 'hvac-family-purifier', x: 2, y: 3, w: 2, h: 2 },
+      { i: 'hvac-thermostat', x: 0, y: 0, w: 6, h: 4 },
+      { i: 'hvac-nursery-humidifier', x: 6, y: 0, w: 6, h: 4 },
+      { i: 'hvac-basement-purifier', x: 0, y: 4, w: 6, h: 1 },
+      { i: 'hvac-family-purifier', x: 6, y: 4, w: 6, h: 1 },
     ],
   },
   '3dprinter': {
     lg: [
-      { i: 'prt-printer', x: 0, y: 0, w: 2, h: 2 },
-      { i: 'prt-camera', x: 2, y: 0, w: 2, h: 2 },
+      { i: 'prt-printer', x: 0, y: 0, w: 6, h: 4 },
+      { i: 'prt-camera', x: 6, y: 0, w: 6, h: 4 },
     ],
   },
   security: {
     lg: [
-      { i: 'sec-alarm', x: 0, y: 0, w: 2, h: 4 },
-      { i: 'sec-siren', x: 2, y: 0, w: 2, h: 2 },
-      { i: 'sec-cam-active', x: 2, y: 2, w: 2, h: 2 },
-      { i: 'sec-frig-det', x: 0, y: 4, w: 2, h: 2 },
-      { i: 'sec-frig-rec', x: 2, y: 4, w: 2, h: 2 },
-      { i: 'sec-doorbell', x: 0, y: 6, w: 2, h: 2 },
-      { i: 'sec-doorbell-act', x: 2, y: 6, w: 2, h: 2 },
-      { i: 'sec-lock', x: 0, y: 8, w: 2, h: 2 },
-      { i: 'sec-driveway', x: 2, y: 8, w: 2, h: 2 },
-      { i: 'sec-driveway-act', x: 0, y: 10, w: 2, h: 2 },
-      { i: 'sec-driveway-siren', x: 2, y: 10, w: 2, h: 2 },
-      { i: 'sec-driveway-light', x: 0, y: 12, w: 2, h: 2 },
-      { i: 'sec-garage', x: 2, y: 12, w: 2, h: 2 },
-      { i: 'sec-sensor-backdoor', x: 0, y: 14, w: 2, h: 2 },
-      { i: 'sec-sensor-garage-side', x: 2, y: 14, w: 2, h: 2 },
-      { i: 'sec-sensor-utility', x: 0, y: 16, w: 2, h: 2 },
-      { i: 'sec-sensor-front', x: 2, y: 16, w: 2, h: 2 },
-      { i: 'sec-sensor-ring-1', x: 0, y: 18, w: 2, h: 2 },
-      { i: 'sec-sensor-ring-2', x: 2, y: 18, w: 2, h: 2 },
+      { i: 'sec-alarm', x: 0, y: 0, w: 6, h: 4 },
+      { i: 'sec-siren', x: 6, y: 0, w: 6, h: 1 },
+      { i: 'sec-cam-active', x: 6, y: 1, w: 6, h: 1 },
+      { i: 'sec-frig-det', x: 6, y: 2, w: 6, h: 1 },
+      { i: 'sec-frig-rec', x: 6, y: 3, w: 6, h: 1 },
+      { i: 'sec-doorbell', x: 0, y: 4, w: 6, h: 4 },
+      { i: 'sec-doorbell-act', x: 6, y: 4, w: 6, h: 1 },
+      { i: 'sec-lock', x: 6, y: 5, w: 6, h: 2 },
+      { i: 'sec-driveway', x: 0, y: 8, w: 6, h: 4 },
+      { i: 'sec-driveway-act', x: 6, y: 8, w: 6, h: 1 },
+      { i: 'sec-driveway-siren', x: 6, y: 9, w: 6, h: 1 },
+      { i: 'sec-driveway-light', x: 6, y: 10, w: 6, h: 1 },
+      { i: 'sec-garage', x: 6, y: 11, w: 6, h: 2 },
+      { i: 'sec-sensor-backdoor', x: 0, y: 13, w: 3, h: 1 },
+      { i: 'sec-sensor-garage-side', x: 3, y: 13, w: 3, h: 1 },
+      { i: 'sec-sensor-utility', x: 6, y: 13, w: 3, h: 1 },
+      { i: 'sec-sensor-front', x: 9, y: 13, w: 3, h: 1 },
+      { i: 'sec-sensor-ring-1', x: 0, y: 14, w: 6, h: 1 },
+      { i: 'sec-sensor-ring-2', x: 6, y: 14, w: 6, h: 1 },
     ],
   },
   'cast-controls': {
     lg: [
-      { i: 'cst-active', x: 0, y: 0, w: 2, h: 2 },
-      { i: 'cst-shield', x: 2, y: 0, w: 2, h: 2 },
-      { i: 'cst-bedroom', x: 0, y: 2, w: 2, h: 2 },
-      { i: 'cst-basement', x: 2, y: 2, w: 2, h: 2 },
+      { i: 'cst-active', x: 0, y: 0, w: 6, h: 2 },
+      { i: 'cst-shield', x: 6, y: 0, w: 6, h: 2 },
+      { i: 'cst-bedroom', x: 0, y: 2, w: 6, h: 2 },
+      { i: 'cst-basement', x: 6, y: 2, w: 6, h: 2 },
     ],
   },
   cameras: {
     lg: [
-      { i: 'cam-nursery', x: 0, y: 0, w: 2, h: 2 },
-      { i: 'cam-dining', x: 2, y: 0, w: 2, h: 2 },
-      { i: 'cam-living', x: 0, y: 2, w: 2, h: 2 },
-      { i: 'cam-family', x: 2, y: 2, w: 2, h: 2 },
-      { i: 'cam-play', x: 0, y: 4, w: 2, h: 2 },
-      { i: 'cam-theater', x: 2, y: 4, w: 2, h: 2 },
-      { i: 'cam-garage', x: 0, y: 6, w: 2, h: 2 },
-      { i: 'cam-maker', x: 2, y: 6, w: 2, h: 2 },
+      { i: 'cam-nursery', x: 0, y: 0, w: 6, h: 4 },
+      { i: 'cam-dining', x: 6, y: 0, w: 6, h: 4 },
+      { i: 'cam-living', x: 0, y: 4, w: 6, h: 4 },
+      { i: 'cam-family', x: 6, y: 4, w: 6, h: 4 },
+      { i: 'cam-play', x: 0, y: 8, w: 6, h: 4 },
+      { i: 'cam-theater', x: 6, y: 8, w: 6, h: 4 },
+      { i: 'cam-garage', x: 0, y: 12, w: 6, h: 4 },
+      { i: 'cam-maker', x: 6, y: 12, w: 6, h: 4 },
     ],
   },
   weather: {
     lg: [
-      { i: 'wth-hourly', x: 0, y: 0, w: 2, h: 2 },
+      { i: 'wth-hourly', x: 0, y: 0, w: 12, h: 3 },
     ],
   },
   'temp-monitor-view': {
     lg: [
-      { i: 'tmp-chart', x: 0, y: 0, w: 2, h: 2 },
-      { i: 'tmp-mbt-shower', x: 2, y: 0, w: 2, h: 2 },
-      { i: 'tmp-freezer', x: 0, y: 2, w: 2, h: 2 },
-      { i: 'tmp-filament', x: 2, y: 2, w: 2, h: 2 },
-      { i: 'tmp-deep-freeze', x: 0, y: 4, w: 2, h: 2 },
-      { i: 'tmp-bar-fridge', x: 2, y: 4, w: 2, h: 2 },
+      { i: 'tmp-chart', x: 0, y: 0, w: 12, h: 4 },
+      { i: 'tmp-mbt-shower', x: 0, y: 4, w: 6, h: 3 },
+      { i: 'tmp-freezer', x: 6, y: 4, w: 6, h: 3 },
+      { i: 'tmp-filament', x: 0, y: 7, w: 6, h: 3 },
+      { i: 'tmp-deep-freeze', x: 6, y: 7, w: 6, h: 3 },
+      { i: 'tmp-bar-fridge', x: 0, y: 10, w: 12, h: 3 },
     ],
   },
   network: {
     lg: [
-      { i: 'net-adguard', x: 0, y: 0, w: 2, h: 2 },
+      { i: 'net-adguard', x: 0, y: 0, w: 12, h: 3 },
     ],
   },
   server: {
     lg: [
-      { i: 'srv-ups-office', x: 0, y: 0, w: 2, h: 2 },
-      { i: 'srv-ups-server', x: 2, y: 0, w: 2, h: 2 },
-      { i: 'srv-printer', x: 0, y: 2, w: 2, h: 2 },
+      { i: 'srv-ups-office', x: 0, y: 0, w: 6, h: 3 },
+      { i: 'srv-ups-server', x: 6, y: 0, w: 6, h: 3 },
+      { i: 'srv-printer', x: 0, y: 3, w: 12, h: 4 },
     ],
   },
   cooking: {
     lg: [
-      { i: 'ck-smoker', x: 0, y: 0, w: 2, h: 2 },
+      { i: 'ck-smoker', x: 0, y: 0, w: 12, h: 4 },
     ],
   },
   map: {
     lg: [
-      { i: 'map-time1', x: 0, y: 0, w: 2, h: 2 },
-      { i: 'map-time2', x: 2, y: 0, w: 2, h: 2 },
+      { i: 'map-time1', x: 0, y: 0, w: 6, h: 1 },
+      { i: 'map-time2', x: 6, y: 0, w: 6, h: 1 },
     ],
   },
   car: {
     lg: [
-      { i: 'car-vehicle', x: 0, y: 0, w: 2, h: 3 },
+      { i: 'car-vehicle', x: 0, y: 0, w: 12, h: 4 },
     ],
   },
 };
+
+const scaleLayoutForBreakpoint = (lgLayout: any[], breakpointCols: number, targetBreakpoint: string): any[] => {
+  const sorted = [...lgLayout].sort((a, b) => {
+    if (a.y !== b.y) return a.y - b.y;
+    return a.x - b.x;
+  });
+
+  return sorted.map((item) => {
+    const lgW = item.w || 2;
+    const lgX = item.x || 0;
+    
+    let w = Math.max(1, Math.round((lgW / 12) * breakpointCols));
+    
+    // For very small breakpoints, force full width for complex cards
+    if (targetBreakpoint === 'xs' || targetBreakpoint === 'xxs') {
+      const complexKeywords = ['thermostat', 'weather', 'remote', 'camera', 'graph', 'printer', 'ups', 'car', 'media', 'alarm', 'cover'];
+      if (complexKeywords.some(keyword => item.i.includes(keyword))) {
+        w = breakpointCols;
+      }
+    }
+
+    let x = Math.round((lgX / 12) * breakpointCols);
+    if (x + w > breakpointCols) {
+      x = Math.max(0, breakpointCols - w);
+    }
+
+    return {
+      ...item,
+      w,
+      x,
+      h: item.h, // Height is ALWAYS preserved
+    };
+  });
+};
+
+const buildCompleteLayouts = (rawLayouts: { [viewId: string]: { lg: any[] } }): ViewLayouts => {
+  const complete: ViewLayouts = {};
+
+  Object.entries(rawLayouts).forEach(([viewId, viewLayout]) => {
+    complete[viewId] = {
+      lg: viewLayout.lg,
+      md: scaleLayoutForBreakpoint(viewLayout.lg, 8, 'md'),
+      sm: scaleLayoutForBreakpoint(viewLayout.lg, 6, 'sm'),
+      xs: scaleLayoutForBreakpoint(viewLayout.lg, 4, 'xs'),
+      xxs: scaleLayoutForBreakpoint(viewLayout.lg, 2, 'xxs'),
+    };
+  });
+
+  return complete;
+};
+
+const DEFAULT_LAYOUTS = buildCompleteLayouts(DEFAULT_LAYOUTS_RAW);
 
 export const useLayoutManager = () => {
   const [currentView, setCurrentView] = useState<string>('home');
